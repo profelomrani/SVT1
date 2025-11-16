@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>La Dérive des Continents - Exercices Interactifs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+            overscroll-behavior-y: contain; 
+        }
+        
+        .dragging-touch {
+            position: fixed !important;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.7;
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .custom-select-trigger {
+            cursor: pointer;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 2px solid #a5b4fc;
+            background-color: #eef2ff;
+            color: #4338ca;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .custom-select-trigger:hover {
+            background-color: #e0e7ff;
+            border-color: #818cf8;
+            transform: translateY(-1px);
+        }
+        .custom-select-menu {
+            position: absolute;
+            z-index: 50;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 4px;
+            min-width: 150px;
+            animation: fadeIn 0.1s ease-out;
+        }
+        .custom-select-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .custom-select-option:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .success-animation { animation: bounce 0.6s ease-in-out; }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .drag-over {
+            background-color: #bae6fd !important; /* sky-200 */
+            border: 2px dashed #0284c7 !important; /* sky-600 */
+        }
+        
+        .correct-answer {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+            border-color: #047857 !important;
+        }
+        
+        .wrong-answer {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            color: white !important;
+            border-color: #b91c1c !important;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-sky-100 to-indigo-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <img src="https://i.postimg.cc/nV52n9Xm/logo-ar-tamz.png" alt="Logo du collège" class="mx-auto w-full max-w-[400px] h-auto">
+            <h2 class="text-2xl font-semibold text-gray-800 mt-4">Collège Sidi Abd Elaziz Oued Zem</h2>
+            <p class="text-lg text-gray-600">Sciences de la Vie et de la Terre</p>
+            
+            <hr class="my-6 max-w-lg mx-auto border-gray-300">
+
+            <h1 class="text-5xl font-bold text-indigo-900 mb-4 tracking-tight">🌍 La Dérive des Continents</h1>
+            <p class="text-lg text-gray-700">Exercices interactifs sur la théorie de Wegener</p>
+            <p class="text-md text-indigo-700 font-semibold mt-2">Niveau : 2APIC</p>
+            
+            <div class="mt-6 bg-white/80 backdrop-blur-sm rounded-full px-6 py-2 inline-block shadow-lg border border-slate-200">
+                <span class="text-sm font-semibold text-indigo-600">Score: </span>
+                <span id="totalScore" class="text-lg font-bold text-indigo-800">0</span>
+                <span class="text-sm text-gray-500">/ 100</span>
+            </div>
+        </header>
+
+        <!-- Niveau 1 -->
+        <div class="bg-slate-50/70 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8 mb-8 border border-slate-200">
+            <h2 class="text-2xl font-bold text-indigo-800 mb-6 flex items-center">
+                <span class="bg-indigo-200 text-indigo-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-bold">1</span>
+                Niveau 1 - Application directe
+            </h2>
+
+            <!-- Exercice A: Texte à trous -->
+            <div class="mb-8 p-6 bg-gradient-to-r from-blue-100 to-indigo-100/50 rounded-xl">
+                <h3 class="text-xl font-semibold text-indigo-900 mb-4">📝 A) Complétez le texte</h3>
+                <div class="bg-white/80 p-4 rounded-lg shadow-sm mb-4">
+                    <p class="text-gray-700 leading-relaxed" id="fillText">
+                        En 1912, Wegener a proposé que tous les continents formaient autrefois un seul supercontinent appelé la 
+                        <span class="custom-select-trigger" data-answer="Pangée" data-options='["Pangée", "dorsale", "plaques"]' data-value="">Choisir...</span>. 
+                        Il a observé une complémentarité entre les côtes de l'
+                        <span class="custom-select-trigger" data-answer="Afrique" data-options='["Afrique", "fossiles", "dorsale"]' data-value="">Choisir...</span>
+                        et de l'Amérique du Sud. Il a aussi retrouvé les mêmes 
+                        <span class="custom-select-trigger" data-answer="fossiles" data-options='["fossiles", "plaques", "Pangée"]' data-value="">Choisir...</span>
+                        sur ces continents. Aujourd'hui, on sait que la 
+                        <span class="custom-select-trigger" data-answer="dorsale" data-options='["dorsale", "Afrique", "fossiles"]' data-value="">Choisir...</span>
+                        médio-océanique forme une nouvelle croûte et repousse les 
+                        <span class="custom-select-trigger" data-answer="plaques" data-options='["plaques", "Pangée", "dorsale"]' data-value="">Choisir...</span>
+                        lithosphériques.
+                    </p>
+                </div>
+                <button onclick="checkFillBlanks()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transform hover:scale-105 transition-all duration-200">
+                    Vérifier
+                </button>
+                <div id="fillResult" class="mt-4"></div>
+            </div>
+
+            <!-- Exercice B: Vrai/Faux -->
+            <div class="mb-8 p-6 bg-gradient-to-r from-green-100 to-emerald-100/50 rounded-xl">
+                <h3 class="text-xl font-semibold text-green-900 mb-4">✅ B) Vrai ou Faux</h3>
+                <div class="space-y-4">
+                    <div class="bg-white/80 p-4 rounded-lg shadow-sm"><p class="text-gray-700 mb-3">Wegener a proposé sa théorie en 1912</p><div class="flex gap-4 true-false-container"><button onclick="selectTrueFalse(this, true)" class="true-false-btn px-4 py-2 border-2 border-green-300 rounded-lg hover:bg-green-100 transition-colors">Vrai</button><button onclick="selectTrueFalse(this, false)" class="true-false-btn px-4 py-2 border-2 border-red-300 rounded-lg hover:bg-red-100 transition-colors">Faux</button></div></div>
+                    <div class="bg-white/80 p-4 rounded-lg shadow-sm"><p class="text-gray-700 mb-3">La Pangée s'est fragmentée en plusieurs continents</p><div class="flex gap-4 true-false-container"><button onclick="selectTrueFalse(this, true)" class="true-false-btn px-4 py-2 border-2 border-green-300 rounded-lg hover:bg-green-100 transition-colors">Vrai</button><button onclick="selectTrueFalse(this, false)" class="true-false-btn px-4 py-2 border-2 border-red-300 rounded-lg hover:bg-red-100 transition-colors">Faux</button></div></div>
+                    <div class="bg-white/80 p-4 rounded-lg shadow-sm"><p class="text-gray-700 mb-3">On retrouve les mêmes fossiles uniquement en Afrique</p><div class="flex gap-4 true-false-container"><button onclick="selectTrueFalse(this, false)" class="true-false-btn px-4 py-2 border-2 border-green-300 rounded-lg hover:bg-green-100 transition-colors">Vrai</button><button onclick="selectTrueFalse(this, true)" class="true-false-btn px-4 py-2 border-2 border-red-300 rounded-lg hover:bg-red-100 transition-colors">Faux</button></div></div>
+                    <div class="bg-white/80 p-4 rounded-lg shadow-sm"><p class="text-gray-700 mb-3">La dorsale médio-océanique crée une nouvelle croûte qui écarte les plaques lithosphériques</p><div class="flex gap-4 true-false-container"><button onclick="selectTrueFalse(this, true)" class="true-false-btn px-4 py-2 border-2 border-green-300 rounded-lg hover:bg-green-100 transition-colors">Vrai</button><button onclick="selectTrueFalse(this, false)" class="true-false-btn px-4 py-2 border-2 border-red-300 rounded-lg hover:bg-red-100 transition-colors">Faux</button></div></div>
+                </div>
+                <button onclick="checkTrueFalse()" class="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transform hover:scale-105 transition-all duration-200">
+                    Vérifier
+                </button>
+                <div id="trueFalseResult" class="mt-4"></div>
+            </div>
+
+            <!-- Exercice C: QCM -->
+            <div class="mb-8 p-6 bg-gradient-to-r from-purple-100 to-pink-100/50 rounded-xl">
+                <h3 class="text-xl font-semibold text-purple-900 mb-4">🎯 C) Question à choix multiple</h3>
+                <div class="bg-white/80 p-4 rounded-lg shadow-sm">
+                    <p class="text-gray-700 mb-4 font-semibold">Quel est le nom du supercontinent proposé par Wegener ?</p>
+                    <div class="space-y-3 qcm-container">
+                        <button onclick="selectQCM(this, true)" class="qcm-btn w-full text-left p-3 border-2 border-purple-200 rounded-lg hover:bg-purple-100 transition-colors shadow-sm">🌍 Pangée</button>
+                        <button onclick="selectQCM(this, false)" class="qcm-btn w-full text-left p-3 border-2 border-purple-200 rounded-lg hover:bg-purple-100 transition-colors shadow-sm">🗺️ Eurasie</button>
+                        <button onclick="selectQCM(this, false)" class="qcm-btn w-full text-left p-3 border-2 border-purple-200 rounded-lg hover:bg-purple-100 transition-colors shadow-sm">🌎 Amériga</button>
+                    </div>
+                </div>
+                <div id="qcmResult" class="mt-4"></div>
+            </div>
+
+            <!-- Exercice D: Association -->
+            <div class="p-6 bg-gradient-to-r from-orange-100 to-yellow-100/50 rounded-xl">
+                <h3 class="text-xl font-semibold text-orange-900 mb-4">🔗 D) Association</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-orange-800 mb-3">Types d'arguments</h4>
+                        <div class="space-y-3 drag-container">
+                            <div draggable="true" class="drag-item bg-orange-200 p-3 rounded-lg cursor-move border-2 border-orange-300 hover:bg-orange-300 transition-colors shadow-sm" data-type="morphologique">🏔️ Morphologique</div>
+                            <div draggable="true" class="drag-item bg-orange-200 p-3 rounded-lg cursor-move border-2 border-orange-300 hover:bg-orange-300 transition-colors shadow-sm" data-type="paléontologique">🦕 Paléontologique</div>
+                            <div draggable="true" class="drag-item bg-orange-200 p-3 rounded-lg cursor-move border-2 border-orange-300 hover:bg-orange-300 transition-colors shadow-sm" data-type="géologique">🪨 Géologique</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-orange-800 mb-3">Descriptions</h4>
+                        <div id="descriptionsContainer" class="space-y-3">
+                            <div class="drop-zone bg-white/80 p-3 rounded-lg border-2 border-dashed border-orange-300 min-h-[60px] flex items-center" data-answer="morphologique"><span class="text-gray-600">Forme complémentaire des côtes continentales</span></div>
+                            <div class="drop-zone bg-white/80 p-3 rounded-lg border-2 border-dashed border-orange-300 min-h-[60px] flex items-center" data-answer="paléontologique"><span class="text-gray-600">Fossiles identiques sur plusieurs continents</span></div>
+                            <div class="drop-zone bg-white/80 p-3 rounded-lg border-2 border-dashed border-orange-300 min-h-[60px] flex items-center" data-answer="géologique"><span class="text-gray-600">Roches identiques de part et d'autre</span></div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="checkAssociation()" class="mt-4 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md transform hover:scale-105 transition-all duration-200">
+                    Vérifier
+                </button>
+                <div id="associationResult" class="mt-4"></div>
+            </div>
+        </div>
+
+        <!-- Niveau 2 -->
+        <div class="bg-slate-50/70 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8 mb-8 border border-slate-200">
+            <h2 class="text-2xl font-bold text-indigo-800 mb-6 flex items-center">
+                <span class="bg-indigo-200 text-indigo-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-bold">2</span>
+                Niveau 2 - Mise en situation
+            </h2>
+
+            <div class="mb-8 p-6 bg-gradient-to-r from-teal-100 to-cyan-100/50 rounded-xl">
+                <h3 class="text-xl font-semibold text-teal-900 mb-4">💭 A) Questions à choix multiples</h3>
+                <div class="space-y-6">
+                    <div class="bg-white/80 p-4 rounded-lg shadow-sm"><p class="text-gray-700 mb-4 font-semibold">Quel indice visuel a permis à Wegener de proposer sa théorie ?</p><div class="space-y-3 choice-container"><button onclick="selectChoice(this, true)" class="choice-btn w-full text-left p-3 border-2 border-teal-200 rounded-lg hover:bg-teal-100 transition-colors shadow-sm">🧩 La forme complémentaire des côtes africaines et sud-américaines</button><button onclick="selectChoice(this, false)" class="choice-btn w-full text-left p-3 border-2 border-teal-200 rounded-lg hover:bg-teal-100 transition-colors shadow-sm">🌋 La présence de volcans sur tous les continents</button><button onclick="selectChoice(this, false)" class="choice-btn w-full text-left p-3 border-2 border-teal-200 rounded-lg hover:bg-teal-100 transition-colors shadow-sm">🏔️ La hauteur similaire des montagnes</button></div></div>
+                    <div class="bg-white/80 p-4 rounded-lg shadow-sm"><p class="text-gray-700 mb-4 font-semibold">Quel type de preuve montre que des continents éloignés étaient autrefois unis ?</p><div class="space-y-3 choice-container"><button onclick="selectChoice(this, false)" class="choice-btn w-full text-left p-3 border-2 border-teal-200 rounded-lg hover:bg-teal-100 transition-colors shadow-sm">🌡️ Les températures similaires entre continents</button><button onclick="selectChoice(this, true)" class="choice-btn w-full text-left p-3 border-2 border-teal-200 rounded-lg hover:bg-teal-100 transition-colors shadow-sm">🦕 Les fossiles identiques trouvés sur différents continents</button><button onclick="selectChoice(this, false)" class="choice-btn w-full text-left p-3 border-2 border-teal-200 rounded-lg hover:bg-teal-100 transition-colors shadow-sm">🌊 La profondeur des océans entre les continents</button></div></div>
+                </div>
+                <button onclick="checkChoices()" class="mt-4 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transform hover:scale-105 transition-all duration-200">
+                    Vérifier
+                </button>
+                <div id="shortAnswersResult" class="mt-4"></div>
+            </div>
+
+            <div class="p-6 bg-gradient-to-r from-rose-100 to-pink-100/50 rounded-xl">
+                <h3 class="text-xl font-semibold text-rose-900 mb-4">🔄 B) Remets en ordre</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-rose-800 mb-3">Étapes à ordonner</h4>
+                        <div id="stepsToOrder" class="space-y-3">
+                            <div draggable="true" class="order-item bg-rose-200 p-3 rounded-lg cursor-move border-2 border-rose-300 hover:bg-rose-300 transition-colors shadow-sm" data-order="2">↔️ Cette nouvelle croûte repousse l’ancienne de chaque côté.</div>
+                            <div draggable="true" class="order-item bg-rose-200 p-3 rounded-lg cursor-move border-2 border-rose-300 hover:bg-rose-300 transition-colors shadow-sm" data-order="4">⬅️🌍➡️ Les continents africain et américain s’éloignent.</div>
+                            <div draggable="true" class="order-item bg-rose-200 p-3 rounded-lg cursor-move border-2 border-rose-300 hover:bg-rose-300 transition-colors shadow-sm" data-order="1">🌋 Une nouvelle croûte basaltique se forme au niveau de la dorsale.</div>
+                            <div draggable="true" class="order-item bg-rose-200 p-3 rounded-lg cursor-move border-2 border-rose-300 transition-colors shadow-sm" data-order="3">🌊 Le fond de l’océan Atlantique s’élargit progressivement.</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-rose-800 mb-3">Ordre correct</h4>
+                        <div id="orderZone" class="space-y-3">
+                            <div class="order-drop bg-white/80 p-3 rounded-lg border-2 border-dashed border-rose-300 min-h-[60px] flex items-center justify-center text-gray-400 font-semibold" data-position="1">1. Déposez ici</div>
+                            <div class="order-drop bg-white/80 p-3 rounded-lg border-2 border-dashed border-rose-300 min-h-[60px] flex items-center justify-center text-gray-400 font-semibold" data-position="2">2. Déposez ici</div>
+                            <div class="order-drop bg-white/80 p-3 rounded-lg border-2 border-dashed border-rose-300 min-h-[60px] flex items-center justify-center text-gray-400 font-semibold" data-position="3">3. Déposez ici</div>
+                            <div class="order-drop bg-white/80 p-3 rounded-lg border-2 border-dashed border-rose-300 min-h-[60px] flex items-center justify-center text-gray-400 font-semibold" data-position="4">4. Déposez ici</div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="checkOrder()" class="mt-4 bg-rose-500 hover:bg-rose-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md transform hover:scale-105 transition-all duration-200">
+                    Vérifier
+                </button>
+                <div id="orderResult" class="mt-4"></div>
+            </div>
+        </div>
+
+        <div class="text-center mt-12">
+            <button onclick="checkAllExercises()" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-xl px-12 py-4 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300">
+                🏆 Terminer et voir mon score final
+            </button>
+        </div>
+    </div>
+
+    <div id="globalResultModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-md w-full transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+            <h2 class="text-3xl font-bold text-indigo-800 mb-4">Votre Résultat Final</h2>
+            <p class="text-5xl font-bold my-4" id="finalScoreDisplay">100 / 100</p>
+            <p class="text-lg text-gray-700 mb-6" id="motivationalMessage">Appréciation motivante ici.</p>
+            <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                Recommencer l'exercice
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Le code JavaScript reste identique à la version précédente
+        let totalScore = 0;
+        let qcmSelection = null;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.custom-select-trigger').forEach(trigger => {
+                trigger.dataset.options = JSON.stringify(shuffleArray(JSON.parse(trigger.dataset.options)));
+            });
+            initializeCustomSelects();
+            shuffleContainerChildren('.qcm-container');
+            shuffleContainerChildren('.drag-container');
+            shuffleContainerChildren('#descriptionsContainer');
+            shuffleContainerChildren('#stepsToOrder');
+            document.querySelectorAll('.choice-container').forEach(shuffleContainerChildren);
+            initializeDragAndDrop();
+        });
+        
+        function shuffleContainerChildren(selector) {
+            const container = typeof selector === 'string' ? document.querySelector(selector) : selector;
+            if (container) {
+                const children = Array.from(container.children);
+                container.innerHTML = '';
+                shuffleArray(children).forEach(child => container.appendChild(child));
+            }
+        }
+
+        function initializeCustomSelects() {
+            document.addEventListener('click', () => document.querySelector('.custom-select-menu')?.remove());
+            document.querySelectorAll('.custom-select-trigger').forEach(trigger => {
+                trigger.addEventListener('click', e => {
+                    e.stopPropagation();
+                    document.querySelector('.custom-select-menu')?.remove();
+                    const menu = document.createElement('div');
+                    menu.className = 'custom-select-menu';
+                    JSON.parse(trigger.dataset.options).forEach(optionText => {
+                        const optionEl = document.createElement('div');
+                        optionEl.className = 'custom-select-option';
+                        optionEl.textContent = optionText;
+                        optionEl.addEventListener('click', () => {
+                            trigger.textContent = optionText;
+                            trigger.dataset.value = optionText;
+                            menu.remove();
+                        });
+                        menu.appendChild(optionEl);
+                    });
+                    document.body.appendChild(menu);
+                    const rect = trigger.getBoundingClientRect();
+                    menu.style.left = `${rect.left}px`;
+                    menu.style.top = `${rect.bottom + window.scrollY + 4}px`;
+                });
+            });
+        }
+        
+        function initializeDragAndDrop() {
+            let draggedElement = null;
+            const dragItems = document.querySelectorAll('.drag-item, .order-item');
+            const dropZones = document.querySelectorAll('.drop-zone, .order-drop');
+
+            const startDrag = (el) => {
+                draggedElement = el;
+                setTimeout(() => el.style.opacity = '0.5', 0);
+            };
+            const endDrag = (el) => {
+                if (el) el.style.opacity = '1';
+                draggedElement = null;
+            };
+
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', () => startDrag(item));
+                item.addEventListener('dragend', () => endDrag(item));
+                
+                item.addEventListener('touchstart', (e) => {
+                    draggedElement = item;
+                    item.classList.add('dragging-touch');
+                    const touch = e.touches[0];
+                    item.style.top = (touch.clientY - item.offsetHeight / 2) + 'px';
+                    item.style.left = (touch.clientX - item.offsetWidth / 2) + 'px';
+                }, { passive: true });
+                
+                item.addEventListener('touchmove', (e) => {
+                    if (!draggedElement) return;
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    draggedElement.style.top = (touch.clientY - draggedElement.offsetHeight / 2) + 'px';
+                    draggedElement.style.left = (touch.clientX - draggedElement.offsetWidth / 2) + 'px';
+                    dropZones.forEach(z => z.classList.remove('drag-over'));
+                    const elBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                    const dropTarget = elBelow ? elBelow.closest('.drop-zone, .order-drop') : null;
+                    if (dropTarget) dropTarget.classList.add('drag-over');
+                }, { passive: false });
+
+                item.addEventListener('touchend', (e) => {
+                    if (!draggedElement) return;
+                    const touch = e.changedTouches[0];
+                    const elBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                    const dropTarget = elBelow ? elBelow.closest('.drop-zone, .order-drop') : null;
+                    if (dropTarget) handleDrop(dropTarget, draggedElement);
+                    draggedElement.classList.remove('dragging-touch');
+                    draggedElement.style.cssText = '';
+                    dropZones.forEach(z => z.classList.remove('drag-over'));
+                    draggedElement = null;
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    if (draggedElement) handleDrop(zone, draggedElement);
+                });
+            });
+
+            function handleDrop(dropZone, item) {
+                const existingItem = dropZone.querySelector('.drag-item, .order-item');
+                if (existingItem) {
+                    const originalContainer = item.classList.contains('order-item') ? document.getElementById('stepsToOrder') : document.querySelector('.drag-container');
+                    originalContainer.appendChild(existingItem);
+                }
+                const placeholder = dropZone.firstChild;
+                if(placeholder && (placeholder.nodeType === 3 || placeholder.tagName === 'SPAN')) dropZone.innerHTML = '';
+                dropZone.appendChild(item);
+            }
+        }
+        
+        function checkFillBlanks() {
+            const blanks = document.querySelectorAll('.custom-select-trigger');
+            let correct = 0;
+            blanks.forEach(blank => {
+                const isCorrect = blank.dataset.value === blank.dataset.answer;
+                blank.classList.toggle('correct-answer', isCorrect);
+                blank.classList.toggle('wrong-answer', !isCorrect);
+                if (isCorrect) correct++;
+            });
+            updateScore('fillResult', correct, blanks.length, Math.round((correct / blanks.length) * 20));
+        }
+
+        let trueFalseAnswers = {};
+        function selectTrueFalse(button, isCorrect) {
+            const container = button.closest('.true-false-container');
+            container.querySelectorAll('.true-false-btn').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white'));
+            button.classList.add('bg-blue-500', 'text-white');
+            const qIndex = Array.from(document.querySelectorAll('.true-false-container')).indexOf(container);
+            trueFalseAnswers[qIndex] = isCorrect;
+        }
+
+        function checkTrueFalse() {
+            const containers = document.querySelectorAll('.true-false-container');
+            let correct = 0;
+            containers.forEach((container, index) => {
+                const answerIsCorrect = trueFalseAnswers[index] === true;
+                if (answerIsCorrect) correct++;
+                const selectedButton = container.querySelector('.bg-blue-500');
+                if (selectedButton) {
+                    selectedButton.classList.remove('bg-blue-500');
+                    selectedButton.classList.add(answerIsCorrect ? 'correct-answer' : 'wrong-answer');
+                }
+            });
+            updateScore('trueFalseResult', correct, containers.length, Math.round((correct / containers.length) * 20));
+        }
+
+        function selectQCM(button, isCorrect) {
+            qcmSelection = { button, isCorrect };
+            document.querySelectorAll('.qcm-btn').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white'));
+            button.classList.add('bg-blue-500', 'text-white');
+            setTimeout(() => {
+                button.classList.remove('bg-blue-500');
+                button.classList.add(isCorrect ? 'correct-answer' : 'wrong-answer');
+                updateScore('qcmResult', isCorrect ? 1 : 0, 1, isCorrect ? 20 : 0);
+            }, 500);
+        }
+
+        function checkAssociation() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            let correct = 0;
+            dropZones.forEach(zone => {
+                const item = zone.querySelector('.drag-item');
+                const isCorrect = item && item.dataset.type === zone.dataset.answer;
+                zone.classList.toggle('correct-answer', isCorrect);
+                zone.classList.toggle('wrong-answer', !isCorrect);
+                if (isCorrect) correct++;
+            });
+            updateScore('associationResult', correct, dropZones.length, Math.round((correct / dropZones.length) * 20));
+        }
+
+        let choiceAnswers = {};
+        function selectChoice(button, isCorrect) {
+            const container = button.closest('.choice-container');
+            container.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white'));
+            button.classList.add('bg-blue-500', 'text-white');
+            const qIndex = Array.from(document.querySelectorAll('.choice-container')).indexOf(container);
+            choiceAnswers[qIndex] = { selected: button, isCorrect };
+        }
+
+        function checkChoices() {
+            const containers = document.querySelectorAll('.choice-container');
+            let correct = 0;
+            Object.values(choiceAnswers).forEach(answer => {
+                if (answer.isCorrect) correct++;
+                answer.selected.classList.remove('bg-blue-500');
+                answer.selected.classList.add(answer.isCorrect ? 'correct-answer' : 'wrong-answer');
+            });
+            updateScore('shortAnswersResult', correct, containers.length, Math.round((correct / containers.length) * 10));
+        }
+
+        function checkOrder() {
+            const drops = document.querySelectorAll('.order-drop');
+            let correct = 0;
+            drops.forEach(drop => {
+                const item = drop.querySelector('.order-item');
+                const isCorrect = item && item.dataset.order === drop.dataset.position;
+                drop.classList.toggle('correct-answer', isCorrect);
+                drop.classList.toggle('wrong-answer', !isCorrect);
+                if (isCorrect) correct++;
+            });
+            updateScore('orderResult', correct, drops.length, Math.round((correct / drops.length) * 10));
+        }
+
+        function updateScore(resultId, correct, total, points) {
+            const resultDiv = document.getElementById(resultId);
+            const prevScore = parseInt(resultDiv?.dataset.previousScore) || 0;
+            totalScore = Math.max(0, totalScore + points - prevScore);
+            if (resultDiv) resultDiv.dataset.previousScore = points;
+            
+            document.getElementById('totalScore').textContent = totalScore;
+
+            if (resultId && resultDiv) {
+                const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+                resultDiv.innerHTML = `
+                <div class="p-3 rounded-lg ${percentage === 100 ? 'bg-green-100 border-green-300' : 'bg-yellow-100 border-yellow-300'} border">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold ${percentage === 100 ? 'text-green-800' : 'text-yellow-800'}">
+                            ${percentage === 100 ? '🎉 Parfait !' : '👍 Bien joué !'} ${correct}/${total} correct${correct > 1 ? 's' : ''}
+                        </span>
+                        <span class="text-sm font-bold ${percentage === 100 ? 'text-green-600' : 'text-yellow-600'}">+${points} pts</span>
+                    </div>
+                </div>`;
+                resultDiv.classList.add('success-animation');
+                setTimeout(() => resultDiv.classList.remove('success-animation'), 600);
+            }
+        }
+        
+        function checkAllExercises() {
+            totalScore = 0;
+            document.querySelectorAll('[id$="Result"]').forEach(el => {
+                el.innerHTML = '';
+                el.dataset.previousScore = '0';
+            });
+            
+            checkFillBlanks();
+            checkTrueFalse();
+            if(qcmSelection) {
+                updateScore(null, qcmSelection.isCorrect ? 1 : 0, 1, qcmSelection.isCorrect ? 20 : 0);
+            }
+            checkAssociation();
+            checkChoices();
+            checkOrder();
+            
+            displayGlobalResult(totalScore);
+        }
+
+        function displayGlobalResult(score) {
+            const modal = document.getElementById('globalResultModal');
+            const modalContent = document.getElementById('modalContent');
+            const scoreDisplay = document.getElementById('finalScoreDisplay');
+            const messageDisplay = document.getElementById('motivationalMessage');
+            
+            scoreDisplay.textContent = `${score} / 100`;
+            let message = '';
+            let scoreColorClass = '';
+
+            if (score <= 25) { message = "Ne lâche rien, chaque erreur est une leçon ! Continue de t'entraîner."; scoreColorClass = "text-red-600"; }
+            else if (score <= 50) { message = "C'est un bon début ! Relis les indices et essaie encore."; scoreColorClass = "text-orange-500"; }
+            else if (score <= 75) { message = "Excellent travail ! Tu maîtrises bien le sujet."; scoreColorClass = "text-yellow-500"; }
+            else if (score < 100) { message = "Impressionnant ! Tu es presque un expert de la tectonique des plaques !"; scoreColorClass = "text-lime-600"; }
+            else { message = "🎉 Félicitations ! C'est un score parfait ! Wegener serait fier de toi."; scoreColorClass = "text-green-600"; }
+            
+            messageDisplay.textContent = message;
+            scoreDisplay.className = `text-5xl font-bold my-4 ${scoreColorClass}`;
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercices Interactifs : La Dérive des Continents</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .exercise-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .exercise-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-weight: 600;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        .feedback.correct {
+            color: #166534;
+            background-color: #dcfce7;
+        }
+        .feedback.incorrect {
+            color: #991b1b;
+            background-color: #fee2e2;
+        }
+        .draggable {
+            cursor: grab;
+            background-color: #f3f4f6;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .dragging {
+            opacity: 0.5;
+            background-color: #e0e7ff;
+        }
+        .drop-zone {
+            min-height: 50px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">La Dérive des Continents</h1>
+            <p class="text-gray-600 mt-2">Teste tes connaissances avec ces exercices interactifs !</p>
+        </header>
+
+        <!-- Exercice 1: Texte à compléter -->
+        <div id="ex1" class="exercise-card">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">Exercice 1 : Texte à compléter</h2>
+            <p class="text-gray-700 mb-4">
+                Selon la théorie d'Alfred 
+                <select id="q1-1" class="rounded-md border-gray-300 shadow-sm">
+                    <option value="">...</option>
+                    <option value="Wegener">Wegener</option>
+                    <option value="Pangée">Pangée</option>
+                    <option value="continents">continents</option>
+                </select>,
+                tous les 
+                <select id="q1-2" class="rounded-md border-gray-300 shadow-sm">
+                    <option value="">...</option>
+                    <option value="continents">continents</option>
+                    <option value="Wegener">Wegener</option>
+                    <option value="fragmenté">fragmenté</option>
+                </select>
+                actuels formaient un seul et unique bloc appelé la 
+                <select id="q1-3" class="rounded-md border-gray-300 shadow-sm">
+                    <option value="">...</option>
+                    <option value="Pangée">Pangée</option>
+                    <option value="fragmenté">fragmenté</option>
+                    <option value="Wegener">Wegener</option>
+                </select>.
+                Ce supercontinent se serait ensuite 
+                <select id="q1-4" class="rounded-md border-gray-300 shadow-sm">
+                    <option value="">...</option>
+                    <option value="fragmenté">fragmenté</option>
+                    <option value="continents">continents</option>
+                    <option value="Pangée">Pangée</option>
+                </select>
+                en plusieurs parties qui se sont éloignées les unes des autres.
+            </p>
+            <button onclick="checkEx1()" class="btn btn-secondary">Vérifier</button>
+            <div id="feedback-ex1" class="feedback hidden"></div>
+        </div>
+
+        <!-- Exercice 2: Association -->
+        <div id="ex2" class="exercise-card">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">Exercice 2 : Relier les couples</h2>
+            <p class="text-gray-700 mb-4">Associe chaque argument à sa définition correcte.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <div class="font-semibold mb-2">1. Argument morphologique</div>
+                    <div class="font-semibold mb-2 mt-4">2. Argument paléontologique</div>
+                    <div class="font-semibold mb-2 mt-4">3. Argument géologique</div>
+                    <div class="font-semibold mb-2 mt-4">4. Dérive des continents</div>
+                </div>
+                <div>
+                    <select id="q2-1" class="w-full rounded-md border-gray-300 shadow-sm mb-2">
+                        <option value="">Choisis la bonne définition...</option>
+                        <option value="a">a) Présence de fossiles identiques sur des continents séparés.</option>
+                        <option value="b">b) Roches anciennes de même nature sur des continents différents.</option>
+                        <option value="c">c) Théorie proposée par Alfred Wegener.</option>
+                        <option value="d">d) Complémentarité des côtes de l'Afrique et de l'Amérique du Sud.</option>
+                    </select>
+                    <select id="q2-2" class="w-full rounded-md border-gray-300 shadow-sm mb-2">
+                        <option value="">Choisis la bonne définition...</option>
+                        <option value="a">a) Présence de fossiles identiques sur des continents séparés.</option>
+                        <option value="b">b) Roches anciennes de même nature sur des continents différents.</option>
+                        <option value="c">c) Théorie proposée par Alfred Wegener.</option>
+                        <option value="d">d) Complémentarité des côtes de l'Afrique et de l'Amérique du Sud.</option>
+                    </select>
+                    <select id="q2-3" class="w-full rounded-md border-gray-300 shadow-sm mb-2">
+                        <option value="">Choisis la bonne définition...</option>
+                        <option value="a">a) Présence de fossiles identiques sur des continents séparés.</option>
+                        <option value="b">b) Roches anciennes de même nature sur des continents différents.</option>
+                        <option value="c">c) Théorie proposée par Alfred Wegener.</option>
+                        <option value="d">d) Complémentarité des côtes de l'Afrique et de l'Amérique du Sud.</option>
+                    </select>
+                     <select id="q2-4" class="w-full rounded-md border-gray-300 shadow-sm">
+                        <option value="">Choisis la bonne définition...</option>
+                        <option value="a">a) Présence de fossiles identiques sur des continents séparés.</option>
+                        <option value="b">b) Roches anciennes de même nature sur des continents différents.</option>
+                        <option value="c">c) Théorie proposée par Alfred Wegener.</option>
+                        <option value="d">d) Complémentarité des côtes de l'Afrique et de l'Amérique du Sud.</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="checkEx2()" class="btn btn-secondary mt-4">Vérifier</button>
+            <div id="feedback-ex2" class="feedback hidden"></div>
+        </div>
+
+        <!-- Exercice 3: Vrai ou Faux -->
+        <div id="ex3" class="exercise-card">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">Exercice 3 : Vrai ou Faux ?</h2>
+            <div id="q3-container"></div>
+            <button onclick="checkEx3()" class="btn btn-secondary mt-4">Vérifier</button>
+            <div id="feedback-ex3" class="feedback hidden"></div>
+        </div>
+        
+        <!-- Exercice 4: QCM -->
+        <div id="ex4" class="exercise-card">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">Exercice 4 : QCM</h2>
+            <div id="q4-container" class="space-y-6"></div>
+            <button onclick="checkEx4()" class="btn btn-secondary mt-4">Vérifier</button>
+            <div id="feedback-ex4" class="feedback hidden"></div>
+        </div>
+
+        <!-- Exercice 5: Mettre en ordre -->
+        <div id="ex5" class="exercise-card">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">Exercice 5 : Remettre en ordre</h2>
+            <p class="text-gray-700 mb-4">Glisse et dépose les phrases dans le bon ordre pour décrire l'élargissement de l'océan Atlantique.</p>
+            <div id="drop-zone" class="drop-zone bg-gray-100 p-4 rounded-lg border-2 border-dashed border-gray-300">
+                <!-- Les éléments déplaçables seront insérés ici par JS -->
+            </div>
+            <button onclick="checkEx5()" class="btn btn-secondary mt-4">Vérifier</button>
+            <div id="feedback-ex5" class="feedback hidden"></div>
+        </div>
+
+        <!-- Section Résultats -->
+        <div class="text-center mt-8">
+            <button id="finish-btn" onclick="showResults()" class="btn btn-primary text-lg">J'ai terminé, voir mon score !</button>
+        </div>
+        <div id="results-section" class="hidden exercise-card mt-6 text-center">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-700">Ton résultat final</h2>
+            <p class="text-5xl font-bold text-gray-800 mb-4"><span id="final-score">0</span> / 10</p>
+            <p id="final-message" class="text-lg text-gray-700"></p>
+        </div>
+    </div>
+
+    <script>
+        // Données pour les exercices
+        const ex3_questions = [
+            { text: "La Pangée est le nom de l'océan qui entourait le supercontinent.", answer: false, hint: "La Pangée était le supercontinent. L'océan s'appelait Panthalassa." },
+            { text: "L'emboîtement des côtes de l'Afrique et de l'Amérique du Sud est un argument géologique.", answer: false, hint: "C'est un argument morphologique, lié à la forme des continents." },
+            { text: "Plus on s'approche de la dorsale océanique, plus l'âge des roches du plancher océanique est élevé.", answer: false, hint: "Au contraire, les roches sont de plus en plus jeunes près de la dorsale, car c'est là qu'elles se forment !" },
+            { text: "On trouve des fossiles similaires sur les continents africain et sud-américain.", answer: true, hint: "" }
+        ];
+
+        const ex4_questions = [
+            { question: "Le bloc unique qui regroupait tous les continents il y a 250 millions d'années s'appelle :", options: ["L'Océan unique", "La Pangée", "La dorsale océanique"], answer: "La Pangée" },
+            { question: "Que trouve-t-on au centre de l'océan, là où se forme la nouvelle croûte ?", options: ["Un talus continental", "Une plaine abyssale", "Une dorsale médio-océanique"], answer: "Une dorsale médio-océanique" },
+            { question: "Comment varie l'âge des sédiments du fond de l'océan ?", options: ["Il augmente en s'éloignant de la dorsale.", "Il diminue en s'éloignant de la dorsale.", "Il est identique partout dans l'océan."], answer: "Il augmente en s'éloignant de la dorsale." },
+            { question: "La présence de roches de même nature et de même âge en Afrique et en Amérique du Sud est un argument :", options: ["Morphologique", "Paléontologique", "Géologique"], answer: "Géologique" }
+        ];
+
+        const ex5_items = [
+            { id: 'item-2', text: "Les continents africain et américain s'éloignent progressivement." },
+            { id: 'item-3', text: "Une nouvelle croûte se forme en continu au niveau de la dorsale médio-océanique." },
+            { id: 'item-1', text: "La nouvelle croûte formée repousse l'ancienne de chaque côté de la dorsale." },
+            { id: 'item-4', text: "Le fond de l'océan s'élargit." }
+        ];
+        const ex5_correct_order = ["item-3", "item-1", "item-4", "item-2"];
+        
+        let scores = { ex1: 0, ex2: 0, ex3: 0, ex4: 0, ex5: 0 };
+
+        // Initialisation des exercices
+        function init() {
+            // Init Ex3
+            const q3Container = document.getElementById('q3-container');
+            ex3_questions.forEach((q, index) => {
+                q3Container.innerHTML += `
+                    <div class="mb-4" id="q3-${index}">
+                        <p class="text-gray-700 mb-2">${index + 1}. ${q.text}</p>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center"><input type="radio" name="q3-${index}" value="true" class="mr-2">Vrai</label>
+                            <label class="flex items-center"><input type="radio" name="q3-${index}" value="false" class="mr-2">Faux</label>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Init Ex4
+            const q4Container = document.getElementById('q4-container');
+            ex4_questions.forEach((q, index) => {
+                let optionsHTML = '';
+                q.options.forEach(opt => {
+                    optionsHTML += `<label class="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50"><input type="radio" name="q4-${index}" value="${opt}" class="mr-3">${opt}</label>`;
+                });
+                q4Container.innerHTML += `
+                    <div>
+                        <p class="font-semibold text-gray-800 mb-2">${index + 1}. ${q.question}</p>
+                        <div class="space-y-2" id="q4-${index}">${optionsHTML}</div>
+                    </div>
+                `;
+            });
+
+            // Init Ex5
+            const dropZone = document.getElementById('drop-zone');
+            // Shuffle items
+            ex5_items.sort(() => Math.random() - 0.5);
+            ex5_items.forEach(item => {
+                dropZone.innerHTML += `<div id="${item.id}" class="draggable" draggable="true">${item.text}</div>`;
+            });
+            addDragListeners();
+        }
+
+        // Fonctions de vérification
+        function checkEx1() {
+            const answers = {
+                'q1-1': 'Wegener',
+                'q1-2': 'continents',
+                'q1-3': 'Pangée',
+                'q1-4': 'fragmenté'
+            };
+            let correctCount = 0;
+            for (const qId in answers) {
+                const select = document.getElementById(qId);
+                if (select.value === answers[qId]) {
+                    correctCount++;
+                    select.classList.add('border-green-500', 'border-2');
+                    select.classList.remove('border-red-500');
+                } else {
+                    select.classList.add('border-red-500', 'border-2');
+                    select.classList.remove('border-green-500');
+                }
+            }
+            scores.ex1 = (correctCount / 4) * 2;
+            showFeedback('ex1', correctCount === 4, `Tu as ${correctCount} sur 4 bonnes réponses. Score : ${scores.ex1.toFixed(1)}/2`);
+        }
+
+        // CORRECTION APPLIQUÉE ICI
+        function checkEx2() {
+            const correctAnswers = {
+                'q2-1': 'd', // Morphologique
+                'q2-2': 'a', // Paléontologique
+                'q2-3': 'b', // Géologique
+                'q2-4': 'c'  // Dérive des continents
+            };
+            let correctCount = 0;
+
+            // On vérifie chaque association et on met à jour le style visuel
+            for (const qId in correctAnswers) {
+                const select = document.getElementById(qId);
+                if (select.value === correctAnswers[qId]) {
+                    correctCount++;
+                    select.classList.add('border-green-500', 'border-2');
+                    select.classList.remove('border-red-500');
+                } else {
+                    select.classList.add('border-red-500', 'border-2');
+                    select.classList.remove('border-green-500');
+                }
+            }
+            
+            // On calcule le score
+            scores.ex2 = (correctCount / 4) * 2;
+            showFeedback('ex2', correctCount === 4, `Tu as ${correctCount} sur 4 bonnes associations. Score : ${scores.ex2.toFixed(1)}/2`);
+        }
+
+        function checkEx3() {
+            let correctCount = 0;
+            let feedbackText = '';
+            ex3_questions.forEach((q, index) => {
+                const radios = document.getElementsByName(`q3-${index}`);
+                const questionDiv = document.getElementById(`q3-${index}`);
+                let userAnswer;
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        userAnswer = radio.value === 'true';
+                        break;
+                    }
+                }
+                
+                questionDiv.querySelector('p').classList.remove('text-green-700', 'text-red-700');
+                if (userAnswer === q.answer) {
+                    correctCount++;
+                    questionDiv.querySelector('p').classList.add('text-green-700');
+                } else {
+                    questionDiv.querySelector('p').classList.add('text-red-700');
+                    if(q.hint) feedbackText += `<br>Indice ${index+1}: ${q.hint}`;
+                }
+            });
+            scores.ex3 = (correctCount / ex3_questions.length) * 2;
+            showFeedback('ex3', correctCount === ex3_questions.length, `Tu as ${correctCount} sur ${ex3_questions.length} bonnes réponses. Score : ${scores.ex3.toFixed(1)}/2. ${feedbackText}`);
+        }
+
+        function checkEx4() {
+            let correctCount = 0;
+            ex4_questions.forEach((q, index) => {
+                const radios = document.getElementsByName(`q4-${index}`);
+                const questionDiv = document.getElementById(`q4-${index}`);
+                let userAnswer;
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        userAnswer = radio.value;
+                        if (userAnswer === q.answer) {
+                            correctCount++;
+                            radio.parentElement.classList.add('bg-green-100', 'border-green-400');
+                        } else {
+                            radio.parentElement.classList.add('bg-red-100', 'border-red-400');
+                            // Highlight correct answer
+                            for (const r of radios) {
+                                if (r.value === q.answer) {
+                                    r.parentElement.classList.add('bg-green-100', 'border-green-400');
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            });
+            scores.ex4 = (correctCount / ex4_questions.length) * 2;
+            showFeedback('ex4', correctCount === ex4_questions.length, `Tu as ${correctCount} sur ${ex4_questions.length} bonnes réponses. Score : ${scores.ex4.toFixed(1)}/2`);
+        }
+
+        function checkEx5() {
+            const dropZone = document.getElementById('drop-zone');
+            const items = Array.from(dropZone.children);
+            let isCorrect = true;
+            items.forEach((item, index) => {
+                item.classList.remove('bg-green-200', 'bg-red-200');
+                if (item.id !== ex5_correct_order[index]) {
+                    isCorrect = false;
+                    item.classList.add('bg-red-200');
+                } else {
+                    item.classList.add('bg-green-200');
+                }
+            });
+            scores.ex5 = isCorrect ? 2 : 0;
+            showFeedback('ex5', isCorrect, isCorrect ? `Excellent ! C'est le bon ordre. Score : 2/2` : `Ce n'est pas tout à fait le bon ordre. Essaye encore ! Score : 0/2`);
+        }
+
+        function showFeedback(exId, isCorrect, message) {
+            const feedbackDiv = document.getElementById(`feedback-${exId}`);
+            feedbackDiv.innerHTML = message;
+            feedbackDiv.className = 'feedback'; // reset
+            feedbackDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+            feedbackDiv.classList.remove('hidden');
+        }
+        
+        // Drag and Drop
+        let draggedItem = null;
+
+        function addDragListeners() {
+            const draggables = document.querySelectorAll('.draggable');
+            const dropZone = document.getElementById('drop-zone');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggedItem = draggable;
+                    setTimeout(() => draggable.classList.add('dragging'), 0);
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    setTimeout(() => {
+                        draggedItem.classList.remove('dragging');
+                        draggedItem = null;
+                    }, 0);
+                });
+            });
+
+            dropZone.addEventListener('dragover', e => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(dropZone, e.clientY);
+                if (afterElement == null) {
+                    dropZone.appendChild(draggedItem);
+                } else {
+                    dropZone.insertBefore(draggedItem, afterElement);
+                }
+            });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.draggable:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        // Résultats finaux
+        function showResults() {
+            const totalScore = scores.ex1 + scores.ex2 + scores.ex3 + scores.ex4 + scores.ex5;
+            document.getElementById('final-score').textContent = totalScore.toFixed(1);
+            
+            const messageElement = document.getElementById('final-message');
+            let message = '';
+            if (totalScore >= 8) {
+                message = "Excellent travail ! Tu es un véritable expert de la tectonique des plaques !";
+            } else if (totalScore >= 5) {
+                message = "Bravo ! C'est un très bon score. Continue comme ça, tu as bien compris les points importants.";
+            } else {
+                message = "C'est un bon début ! N'hésite pas à refaire les exercices pour t'améliorer. Chaque erreur est une chance d'apprendre !";
+            }
+            messageElement.textContent = message;
+
+            document.getElementById('results-section').classList.remove('hidden');
+            document.getElementById('finish-btn').style.display = 'none';
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        // Lancer l'initialisation au chargement de la page
+        window.onload = init;
+    </script>
+</body>
+</html>
