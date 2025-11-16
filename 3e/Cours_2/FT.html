@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Digestion dans la Bouche</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+        :root {
+            --primary-color: #2c3e50; /* Bleu nuit */
+            --secondary-color: #1abc9c; /* Vert menthe */
+            --background-color: #ecf0f1; /* Gris très clair */
+            --card-background: #ffffff;
+            --text-color: #34495e; /* Gris foncé */
+            --correct-color: #2ecc71; /* Vert émeraude */
+            --incorrect-color: #e74c3c; /* Rouge alizarine */
+            --border-radius: 12px;
+            --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            margin: 0;
+            padding: 30px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        .page { display: none; }
+        .active-page { display: block; }
+
+        .page-content {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 30px 40px;
+            box-shadow: var(--box-shadow);
+            border-top: 5px solid var(--secondary-color);
+        }
+        
+        #welcome-page .page-content { text-align: center; }
+        #welcome-page img { max-width: 350px; height: auto; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+        #welcome-page .school-info { font-size: 1.1em; color: var(--primary-color); font-weight: 600; }
+        #welcome-page .main-title { font-size: 2.5em; font-weight: 700; color: var(--primary-color); margin: 15px 0 5px 0; line-height: 1.2; }
+        #welcome-page .level { font-size: 1.4em; font-weight: 600; color: var(--secondary-color); }
+        #welcome-page .welcome-instructions { 
+            margin: 30px auto; 
+            max-width: 600px; 
+            text-align: left; 
+        }
+        #welcome-page .welcome-instructions p { margin: 5px 0; }
+
+        .exercise-title { font-size: 1.6em; font-weight: 700; color: var(--primary-color); margin-top: 0; margin-bottom: 10px; }
+        .instructions { color: #7f8c8d; margin-bottom: 25px; font-style: italic; }
+        
+        .navigation-controls { display: flex; justify-content: space-between; margin-top: 30px; }
+
+        button {
+            background: linear-gradient(45deg, var(--secondary-color), #16a085);
+            color: white; border: none; padding: 12px 25px; font-size: 1em;
+            font-family: 'Montserrat', sans-serif; font-weight: 600; border-radius: 50px;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(26, 188, 156, 0.4);
+        }
+        button:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 7px 20px rgba(26, 188, 156, 0.6); }
+        button.prev-btn { background: #7f8c8d; box-shadow: 0 4px 15px rgba(127, 140, 141, 0.4); }
+        button.prev-btn:hover:not(:disabled) { background: #95a5a6; box-shadow: 0 7px 20px rgba(127, 140, 141, 0.6); }
+        button:disabled { background: #bdc3c7; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .exercise-actions { display: flex; align-items: center; gap: 20px; margin-top: 25px; }
+        .feedback { font-weight: 600; padding: 8px 12px; border-radius: 6px; }
+
+        /* Styles for individual exercises */
+        .fill-blank { border: none; border-bottom: 2px dashed var(--secondary-color); background: transparent; padding: 5px; font-size: 1em; margin: 0 5px; width: 100px; text-align: center; }
+        .fill-blank.correct { border-bottom: 2px solid var(--correct-color); } .fill-blank.incorrect { border-bottom: 2px solid var(--incorrect-color); }
+        .association-item { margin-bottom: 15px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;}
+        select { padding: 8px; border-radius: 6px; border: 1px solid #ccc; background-color: white; flex-grow: 1;}
+        .tf-option { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 6px;}
+        .qcm-question { margin-bottom: 25px; } .qcm-question strong { display: block; margin-bottom: 12px; font-size: 1.1em; }
+        .qcm-option label { display: block; background-color: #f8f9f9; border: 1px solid #e0e0e0; padding: 12px 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 8px; }
+        .order-container { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; } .order-container .arrow { font-weight: bold; font-size: 1.5em; color: var(--secondary-color); }
+
+        /* Results Page Styles */
+        #results-page .page-content { text-align: center; }
+        #final-score { font-size: 2.5em; font-weight: 700; color: var(--secondary-color); margin: 10px 0; }
+        #final-appreciation { font-size: 1.1em; font-style: italic; color: var(--text-color); }
+        #final-icon { font-size: 4em; margin-bottom: 15px; }
+        #progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 50px; margin: 20px 0; }
+        #progress-bar { width: 0%; height: 15px; background: linear-gradient(90deg, var(--secondary-color), var(--correct-color)); border-radius: 50px; transition: width 1s ease-in-out; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Page 0: Welcome -->
+        <div id="welcome-page" class="page active-page">
+            <div class="page-content">
+                <img src="https://i.postimg.cc/nV52n9Xm/logo-ar-tamz.png" alt="Logo du collège">
+                <p class="school-info">Collège Sidi Abd Elaziz Oued Zem<br>Sciences de la Vie et de la Terre</p>
+                <h1 class="main-title">La digestion dans la bouche</h1>
+                <p class="level">Niveau : 3APIC</p>
+                <div class="welcome-instructions">
+                    <p>Bienvenue !</p>
+                    <p>- Vous allez parcourir 5 étapes pour tester vos connaissances sur la digestion dans la bouche.</p>
+                    <p>- Répondez à chaque question.</p>
+                    <p>- Cliquez sur "Vérifier" pour voir votre score et débloquer l'étape suivante.</p>
+                    <p>Bonne chance</p>
+                </div>
+                <button id="start-btn">Commencer</button>
+            </div>
+        </div>
+
+        <!-- Page 1: Exercice 1 -->
+        <div id="page-1" class="page">
+            <div class="page-content">
+                <h3 class="exercise-title">Exercice 1 : Compléter les blancs (2 points)</h3>
+                <p class="instructions">Complétez le texte suivant avec les mots appropriés : <strong>amidon, amylase, maltose, salive</strong>.</p>
+                <p>"Lors de la mastication, l'<input type="text" id="blank1" class="fill-blank"> contenu dans le pain est dégradé par l'<input type="text" id="blank2" class="fill-blank"> salivaire présente dans la <input type="text" id="blank3" class="fill-blank">. Cette enzyme transforme l'amidon en un sucre simple appelé <input type="text" id="blank4" class="fill-blank">."</p>
+                <div class="exercise-actions">
+                    <button onclick="checkExercise1(this)">Vérifier</button>
+                    <div class="feedback" id="feedback1"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2: Exercice 2 -->
+        <div id="page-2" class="page">
+            <div class="page-content">
+                <h3 class="exercise-title">Exercice 2 : Association (2 points)</h3>
+                <p class="instructions">Reliez chaque terme à sa définition correcte.</p>
+                <div class="association-item"><strong>Amidon :</strong><select id="match1"><option value="">-- Choisissez --</option><option value="enzyme">Enzyme digestive qui dégrade l'amidon</option><option value="liquide">Liquide sécrété dans la bouche</option><option value="sucre_simple">Sucre simple produit par la dégradation de l'amidon</option><option value="glucide_complexe">Glucide complexe présent dans le pain</option></select></div>
+                <div class="association-item"><strong>Amylase :</strong><select id="match2"><option value="">-- Choisissez --</option><option value="enzyme">Enzyme digestive qui dégrade l'amidon</option><option value="liquide">Liquide sécrété dans la bouche</option><option value="sucre_simple">Sucre simple produit par la dégradation de l'amidon</option><option value="glucide_complexe">Glucide complexe présent dans le pain</option></select></div>
+                <div class="association-item"><strong>Maltose :</strong><select id="match3"><option value="">-- Choisissez --</option><option value="enzyme">Enzyme digestive qui dégrade l'amidon</option><option value="liquide">Liquide sécrété dans la bouche</option><option value="sucre_simple">Sucre simple produit par la dégradation de l'amidon</option><option value="glucide_complexe">Glucide complexe présent dans le pain</option></select></div>
+                <div class="association-item"><strong>Salive :</strong><select id="match4"><option value="">-- Choisissez --</option><option value="enzyme">Enzyme digestive qui dégrade l'amidon</option><option value="liquide">Liquide sécrété dans la bouche</option><option value="sucre_simple">Sucre simple produit par la dégradation de l'amidon</option><option value="glucide_complexe">Glucide complexe présent dans le pain</option></select></div>
+                <div class="exercise-actions">
+                    <button onclick="checkExercise2(this)">Vérifier</button>
+                    <div class="feedback" id="feedback2"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page 3: Exercice 3 -->
+        <div id="page-3" class="page">
+            <div class="page-content">
+                <h3 class="exercise-title">Exercice 3 : Vrai ou Faux (2 points)</h3>
+                <p class="instructions">Indiquez si les affirmations suivantes sont vraies ou fausses.</p>
+                <div class="tf-option" id="tf1-container"><div><label><input type="radio" name="tf1" value="V"> <span>Vrai</span></label><label><input type="radio" name="tf1" value="F"> <span>Faux</span></label></div><span>La digestion de l'amidon commence dans l'estomac.</span></div>
+                <div class="tf-option" id="tf2-container"><div><label><input type="radio" name="tf2" value="V"> <span>Vrai</span></label><label><input type="radio" name="tf2" value="F"> <span>Faux</span></label></div><span>L'amylase salivaire fonctionne mieux à 37°C.</span></div>
+                <div class="tf-option" id="tf3-container"><div><label><input type="radio" name="tf3" value="V"> <span>Vrai</span></label><label><input type="radio" name="tf3" value="F"> <span>Faux</span></label></div><span>Le test à l'eau iodée permet de détecter la présence d'amidon.</span></div>
+                <div class="tf-option" id="tf4-container"><div><label><input type="radio" name="tf4" value="V"> <span>Vrai</span></label><label><input type="radio" name="tf4" value="F"> <span>Faux</span></label></div><span>La liqueur de Fehling devient rouge brique en présence de maltose.</span></div>
+                <div class="exercise-actions">
+                    <button onclick="checkExercise3(this)">Vérifier</button>
+                    <div class="feedback" id="feedback3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 4: Exercice 4 -->
+        <div id="page-4" class="page">
+            <div class="page-content">
+                 <h3 class="exercise-title">Exercice 4 : Questions à choix multiple (2 points)</h3>
+                 <p class="instructions">Choisissez la bonne réponse pour chaque question.</p>
+                <div class="qcm-question"><strong>1. Quel est le rôle principal de l'amylase salivaire ?</strong><div class="qcm-options-container" id="qcm1-container"><div class="qcm-option"><label><input type="radio" name="qcm1" value="a"> <span>Dégrader les protéines</span></label></div><div class="qcm-option"><label><input type="radio" name="qcm1" value="b"> <span>Dégrader l'amidon</span></label></div><div class="qcm-option"><label><input type="radio" name="qcm1" value="c"> <span>Dégrader les lipides</span></label></div></div></div>
+                <div class="qcm-question"><strong>2. Quel est le produit final de la digestion de l'amidon dans la bouche ?</strong><div class="qcm-options-container" id="qcm2-container"><div class="qcm-option"><label><input type="radio" name="qcm2" value="a"> <span>Glucose</span></label></div><div class="qcm-option"><label><input type="radio" name="qcm2" value="b"> <span>Fructose</span></label></div><div class="qcm-option"><label><input type="radio" name="qcm2" value="c"> <span>Maltose</span></label></div></div></div>
+                <div class="exercise-actions">
+                    <button onclick="checkExercise4(this)">Vérifier</button>
+                    <div class="feedback" id="feedback4"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page 5: Exercice 5 -->
+        <div id="page-5" class="page">
+            <div class="page-content">
+                <h3 class="exercise-title">Exercice 5 : Question de synthèse (2 points)</h3>
+                <p class="instructions">Remettez dans l'ordre les étapes de la digestion de l'amidon dans la bouche.</p>
+                <ul><li><strong>A.</strong> L'amylase salivaire dégrade l'amidon en maltose.</li><li><strong>B.</strong> Le pain est mastiqué et mélangé à la salive.</li><li><strong>C.</strong> Le maltose donne un goût sucré au pain.</li><li><strong>D.</strong> L'amidon du pain entre en contact avec la salive.</li></ul>
+                <div class="order-container">
+                    <span>1<sup>er</sup>:</span> <select id="order1"><option value="">-</option><option>A</option><option>B</option><option>C</option><option>D</option></select>
+                    <span class="arrow">→</span><span>2<sup>ème</sup>:</span> <select id="order2"><option value="">-</option><option>A</option><option>B</option><option>C</option><option>D</option></select>
+                    <span class="arrow">→</span><span>3<sup>ème</sup>:</span> <select id="order3"><option value="">-</option><option>A</option><option>B</option><option>C</option><option>D</option></select>
+                    <span class="arrow">→</span><span>4<sup>ème</sup>:</span> <select id="order4"><option value="">-</option><option>A</option><option>B</option><option>C</option><option>D</option></select>
+                </div>
+                <div class="exercise-actions">
+                    <button onclick="checkExercise5(this)">Vérifier</button>
+                    <div class="feedback" id="feedback5"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 6: Results -->
+        <div id="results-page" class="page">
+            <div class="page-content">
+                <div id="final-icon"></div>
+                <h2>Ton Résultat Final</h2>
+                <div id="final-score"></div>
+                <div id="progress-bar-container"><div id="progress-bar"></div></div>
+                <p id="final-appreciation"></p>
+                <button onclick="location.reload()">Recommencer</button>
+            </div>
+        </div>
+        
+        <!-- Navigation Controls -->
+        <div class="navigation-controls" id="nav-controls" style="display: none;">
+            <button id="prev-btn" class="prev-btn">Précédent</button>
+            <button id="next-btn">Suivant</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & STATE ---
+        const answers = {
+            ex1: ["amidon", "amylase", "salive", "maltose"],
+            ex2: { match1: "glucide_complexe", match2: "enzyme", match3: "sucre_simple", match4: "liquide" },
+            ex3: { tf1: "F", tf2: "V", tf3: "V", tf4: "V" },
+            ex4: { qcm1: "b", qcm2: "c"},
+            ex5: ["B", "D", "A", "C"]
+        };
+        const points = { ex1: 2, ex2: 2, ex3: 2, ex4: 2, ex5: 2 };
+        const scores = { ex1: 0, ex2: 0, ex3: 0, ex4: 0, ex5: 0 };
+        const checkedStatus = { ex1: false, ex2: false, ex3: false, ex4: false, ex5: false };
+        let currentPageIndex = 0;
+        
+        // --- DOM Elements ---
+        const pages = document.querySelectorAll('.page');
+        const startBtn = document.getElementById('start-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const navControls = document.getElementById('nav-controls');
+        
+        // --- NAVIGATION ---
+        function showPage(index) {
+            pages.forEach((page, i) => page.classList.toggle('active-page', i === index));
+            updateNavControls();
+        }
+
+        function updateNavControls() {
+            if (currentPageIndex === 0 || currentPageIndex === pages.length - 1) {
+                navControls.style.display = 'none';
+            } else {
+                navControls.style.display = 'flex';
+                const currentEx = `ex${currentPageIndex}`;
+                nextBtn.disabled = !checkedStatus[currentEx];
+            }
+            prevBtn.disabled = currentPageIndex <= 1;
+            nextBtn.textContent = (currentPageIndex === pages.length - 2) ? "Voir les résultats" : "Suivant";
+        }
+
+        startBtn.addEventListener('click', () => { currentPageIndex++; showPage(currentPageIndex); });
+        nextBtn.addEventListener('click', () => { if (currentPageIndex < pages.length - 1) { if (currentPageIndex === pages.length - 2) { calculateAndShowResults(); } currentPageIndex++; showPage(currentPageIndex); } });
+        prevBtn.addEventListener('click', () => { if (currentPageIndex > 1) { currentPageIndex--; showPage(currentPageIndex); } });
+
+        // --- FEEDBACK & UTILS ---
+        const normalizeText = (text) => text.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        function showFeedback(elementId, message, isCorrect) {
+            const feedbackEl = document.getElementById(elementId);
+            feedbackEl.textContent = message;
+            feedbackEl.style.backgroundColor = isCorrect ? 'var(--correct-color)' : 'var(--incorrect-color)';
+            feedbackEl.style.color = 'white';
+        }
+
+        // --- CHECKING FUNCTIONS ---
+        function checkExercise1(button) {
+            let score = 0;
+            const userAnswers = [document.getElementById('blank1').value, document.getElementById('blank2').value, document.getElementById('blank3').value, document.getElementById('blank4').value].map(normalizeText);
+            const correctAnswers = answers.ex1.map(normalizeText);
+            ['blank1', 'blank2', 'blank3', 'blank4'].forEach((id, i) => {
+                const inputEl = document.getElementById(id);
+                if (userAnswers[i] === correctAnswers[i]) { inputEl.className = 'fill-blank correct'; score += 0.5; } 
+                else { inputEl.className = 'fill-blank incorrect'; }
+            });
+            scores.ex1 = score; checkedStatus.ex1 = true; button.disabled = true;
+            showFeedback('feedback1', `Score : ${score.toFixed(2)} / ${points.ex1} pts`, score === points.ex1);
+            updateNavControls();
+        }
+
+        function checkExercise2(button) {
+            let score = 0;
+            Object.keys(answers.ex2).forEach(key => {
+                const selectEl = document.getElementById(key);
+                if (selectEl.value === answers.ex2[key]) { selectEl.style.borderColor = 'var(--correct-color)'; score += 0.5; } 
+                else { selectEl.style.borderColor = 'var(--incorrect-color)'; }
+            });
+            scores.ex2 = score; checkedStatus.ex2 = true; button.disabled = true;
+            showFeedback('feedback2', `Score : ${score.toFixed(2)} / ${points.ex2} pts`, score === points.ex2);
+            updateNavControls();
+        }
+
+        function checkExercise3(button) {
+            let score = 0;
+            Object.keys(answers.ex3).forEach(key => {
+                const container = document.getElementById(key + '-container');
+                const checkedRadio = document.querySelector(`input[name="${key}"]:checked`);
+                if (checkedRadio) {
+                    if (checkedRadio.value === answers.ex3[key]) { container.style.backgroundColor = '#d4edda'; score += 0.5; } 
+                    else { container.style.backgroundColor = '#f8d7da'; }
+                }
+            });
+            scores.ex3 = score; checkedStatus.ex3 = true; button.disabled = true;
+            showFeedback('feedback3', `Score : ${score.toFixed(2)} / ${points.ex3} pts`, score === points.ex3);
+            updateNavControls();
+        }
+
+        function checkExercise4(button) {
+            let score = 0;
+            Object.keys(answers.ex4).forEach(key => {
+                const checkedRadio = document.querySelector(`input[name="${key}"]:checked`);
+                if (checkedRadio) {
+                    const label = checkedRadio.closest('label');
+                    if (checkedRadio.value === answers.ex4[key]) { label.style.backgroundColor = '#d4edda'; label.style.borderColor = 'var(--correct-color)'; score += 1; } 
+                    else { label.style.backgroundColor = '#f8d7da'; label.style.borderColor = 'var(--incorrect-color)'; }
+                }
+            });
+            scores.ex4 = score; checkedStatus.ex4 = true; button.disabled = true;
+            showFeedback('feedback4', `Score : ${score.toFixed(2)} / ${points.ex4} pts`, score === points.ex4);
+            updateNavControls();
+        }
+
+        function checkExercise5(button) {
+            const userOrder = [document.getElementById('order1').value, document.getElementById('order2').value, document.getElementById('order3').value, document.getElementById('order4').value];
+            const isCorrect = JSON.stringify(userOrder) === JSON.stringify(answers.ex5);
+            const score = isCorrect ? points.ex5 : 0;
+            scores.ex5 = score; checkedStatus.ex5 = true; button.disabled = true;
+            showFeedback('feedback5', `Score : ${score} / ${points.ex5} pts. L'ordre correct est B→D→A→C.`, isCorrect);
+            updateNavControls();
+        }
+
+        // --- RESULTS PAGE ---
+        function calculateAndShowResults() {
+            const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+            const totalPoints = Object.values(points).reduce((sum, p) => sum + p, 0);
+            const percentage = totalPoints > 0 ? (totalScore / totalPoints) * 100 : 0;
+            let appreciation = '', icon = '';
+            
+            if (percentage >= 90) { icon = '🏆'; appreciation = "Incroyable ! Tu es un(e) véritable expert(e) de la digestion. Félicitations !"; } 
+            else if (percentage >= 70) { icon = '🎉'; appreciation = "Excellent travail ! Ta compréhension du sujet est impressionnante. Continue !"; } 
+            else if (percentage >= 50) { icon = '👍'; appreciation = "Bien joué ! Les bases sont acquises. Un petit effort de révision et tu seras au top !"; } 
+            else { icon = '🧠'; appreciation = "Ne te décourage pas ! Chaque erreur est une occasion d'apprendre. Relis la leçon !"; }
+            
+            document.getElementById('final-icon').innerText = icon;
+            document.getElementById('final-score').innerText = `${totalScore.toFixed(2)} / ${totalPoints}`;
+            document.getElementById('final-appreciation').innerText = appreciation;
+            setTimeout(() => { document.getElementById('progress-bar').style.width = `${percentage}%`; }, 100);
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage(0);
+        });
+    </script>
+</body>
+</html>

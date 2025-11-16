@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activité Interactive : La digestion dans l'intestin grêle</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        :root {
+            --primary-color: #27ae60;
+            --secondary-color: #2980b9;
+            --background-color: #f4f7f9;
+            --text-color: #333;
+            --container-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --correct-bg: #e9f7ef;
+            --incorrect-bg: #fdeeee;
+            --grey-color: #7f8c8d;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .wrapper {
+            max-width: 800px;
+            width: 100%;
+            background-color: var(--container-bg);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Pour les animations */
+        }
+
+        .page {
+            display: none; /* Toutes les pages sont cachées par défaut */
+            animation: fadeIn 0.7s ease-in-out;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Styles communs aux pages d'intro et de résultats */
+        .centered-page {
+            text-align: center;
+        }
+        
+        #intro-logo {
+            width: 360px; /* Largeur mise à jour comme demandé */
+            max-width: 100%; /* Pour la responsivité sur petits écrans */
+            margin-bottom: 20px;
+        }
+        .page h1 { color: var(--primary-color); font-size: 2.2em; margin: 0 0 10px 0; }
+        .page .subtitle { font-size: 1.2em; font-weight: 600; color: #555; margin-bottom: 25px; }
+        .page p { font-size: 1.1em; margin-bottom: 30px; }
+
+        .action-btn { background-color: var(--primary-color); color: white; border: none; padding: 15px 35px; font-size: 1.2em; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .action-btn:hover { background-color: #229954; transform: translateY(-3px) scale(1.05); box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
+
+        /* Styles de la page d'activité */
+        .instruction { background-color: #e8f6f0; border-left: 5px solid var(--primary-color); padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .table-image { display: block; width: 100%; max-width: 100%; height: auto; margin: 20px auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.5s; }
+        .activity-section h2 { display: flex; align-items: center; font-size: 1.8em; color: var(--primary-color); margin-bottom: 20px; }
+        .activity-section h2::before { content: '▶'; font-size: 0.7em; margin-right: 12px; }
+        ul { list-style: none; padding-left: 20px; }
+        li { margin-bottom: 15px; font-size: 1.1em; }
+        li ul li { font-size: 1em; }
+        .final-result { font-weight: bold; display: flex; align-items: center; }
+        .final-result::before { content: '➡'; color: var(--primary-color); font-size: 1.5em; margin-right: 10px; }
+        input[type="text"] { border: 2px solid var(--border-color); border-radius: 6px; padding: 6px 10px; font-family: 'Poppins', sans-serif; font-size: 0.95em; width: 190px; transition: all 0.3s ease; }
+        input[type="text"]:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 5px rgba(39, 174, 96, 0.3); }
+        input.correct { border-color: var(--correct-color); background-color: var(--correct-bg); }
+        input.incorrect { border-color: var(--incorrect-color); background-color: var(--incorrect-bg); }
+
+        .navigation-container { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; border-top: 2px solid var(--border-color); padding-top: 20px; }
+        .nav-btn { background-color: var(--secondary-color); color: white; border: none; padding: 12px 25px; font-size: 1.1em; font-weight: 600; border-radius: 8px; cursor: pointer; transition: background-color 0.3s, transform 0.2s; }
+        .nav-btn:hover { transform: translateY(-2px); }
+        #check-btn { background-color: var(--primary-color); }
+        #prev-btn { background-color: var(--grey-color); }
+        #prev-btn:hover { background-color: #626f70; }
+        #check-btn:hover { background-color: #229954; }
+
+        /* Styles de la page de résultats */
+        #score { font-size: 2em; font-weight: bold; margin: 20px 0 10px; }
+        #appreciation { font-size: 1.2em; font-style: italic; color: #555; margin-bottom: 40px; }
+        .results-actions button { margin: 0 10px; }
+        #show-correction-btn { background-color: var(--secondary-color); }
+        #restart-btn { background-color: var(--grey-color); }
+        
+        #correction-nav { text-align: center; margin-top: 30px; border-top: 2px solid var(--border-color); padding-top: 20px;}
+
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- Page d'introduction -->
+        <div id="intro-page" class="page active centered-page">
+            <img id="intro-logo" src="https://i.postimg.cc/nV52n9Xm/logo-ar-tamz.png" alt="Logo SVT">
+            <h1>La digestion dans l'intestin grêle</h1>
+            <p class="subtitle">Sciences de la vie et de la terre</p>
+            <p>
+                Bienvenue ! Cette activité vous aidera à réviser le rôle des enzymes dans la digestion.
+                Utilisez le tableau de référence pour compléter les réactions chimiques.
+            </p>
+            <button id="start-btn" class="action-btn">Commencer l'activité</button>
+        </div>
+
+        <!-- Page de l'activité -->
+        <div id="activity-page" class="page">
+            <p class="instruction">
+                <strong>Consigne :</strong> En vous basant sur le tableau, complétez les vides. Naviguez entre les sections avec les boutons ci-dessous.
+            </p>
+            <img src="https://b.top4top.io/p_3588de1a11.png" alt="Tableau de la digestion" class="table-image">
+
+            <form id="activity-form">
+                <div id="step-1" class="step activity-section"><h2>Glucides</h2><!-- ... --><ul><li><strong>Suc pancréatique :</strong><ul><li>Amylase → transforme l'<input type="text" id="g1" data-answer="Amidon"> en <input type="text" id="g2" data-answer="Maltose"></li><li>Maltase → transforme le <input type="text" id="g3" data-answer="Maltose"> en <input type="text" id="g4" data-answer="Glucose"></li></ul></li><li><strong>Suc intestinal :</strong><ul><li>Maltase → transforme le <input type="text" id="g5" data-answer="Maltose"> en <input type="text" id="g6" data-answer="Glucose"></li></ul></li><li class="final-result">Résultat final : <input type="text" id="g7" data-answer="Glucose"></li></ul></div>
+                <div id="step-2" class="step activity-section"><h2>Protides</h2><!-- ... --><ul><li><strong>Suc pancréatique :</strong><ul><li>Protéase (trypsine) → transforme les <input type="text" id="p1" data-answer="Protéines"> en <input type="text" id="p2" data-answer="Polypeptides"></li><li>Peptidases → transforment les <input type="text" id="p3" data-answer="Polypeptides"> en <input type="text" id="p4" data-answer="Acides aminés"></li></ul></li><li><strong>Suc intestinal :</strong><ul><li>Peptidases → transforment les <input type="text" id="p5" data-answer="Polypeptides"> en <input type="text" id="p6" data-answer="Acides aminés"></li></ul></li><li class="final-result">Résultat final : <input type="text" id="p7" data-answer="Acides aminés"></li></ul></div>
+                <div id="step-3" class="step activity-section"><h2>Lipides</h2><!-- ... --><ul><li><strong>Suc pancréatique :</strong><ul><li>Lipase → décompose les <input type="text" id="l1" data-answer="Lipides"> en <input type="text" id="l2" data-answer="Acides gras + Glycérol|Acides gras et Glycérol"></li></ul></li><li><strong>Suc intestinal :</strong><ul><li>Lipase → décompose les <input type="text" id="l3" data-answer="Lipides"> en <input type="text" id="l4" data-answer="Acides gras + Glycérol|Acides gras et Glycérol"></li></ul></li><li class="final-result">Résultat final : <input type="text" id="l5" data-answer="Acides gras + Glycérol|Acides gras et Glycérol"></li></ul></div>
+            </form>
+            <div class="navigation-container" id="nav-container">
+                <button type="button" id="prev-btn" class="nav-btn">Précédent</button>
+                <button type="button" id="next-btn" class="nav-btn">Suivant</button>
+                <button type="button" id="check-btn" class="nav-btn" style="display: none;">Voir mes résultats</button>
+            </div>
+            <div id="correction-nav" style="display: none;">
+                 <button id="back-to-results-btn" class="nav-btn">Retour aux résultats</button>
+            </div>
+        </div>
+        
+        <!-- Page des résultats -->
+        <div id="results-page" class="page centered-page">
+            <h1>Résultats de l'activité</h1>
+            <p id="score"></p>
+            <p id="appreciation"></p>
+            <div class="results-actions">
+                <button id="show-correction-btn" class="nav-btn">Voir la correction</button>
+                <button id="restart-btn" class="nav-btn">Recommencer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const pages = document.querySelectorAll('.page');
+            const startBtn = document.getElementById('start-btn');
+            const checkBtn = document.getElementById('check-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const showCorrectionBtn = document.getElementById('show-correction-btn');
+            const backToResultsBtn = document.getElementById('back-to-results-btn');
+            
+            const activityForm = document.getElementById('activity-form');
+            const steps = document.querySelectorAll('.step');
+            const navContainer = document.getElementById('nav-container');
+            const correctionNav = document.getElementById('correction-nav');
+            
+            const scoreElement = document.getElementById('score');
+            const appreciationElement = document.getElementById('appreciation');
+            
+            let currentStep = 0;
+
+            const showPage = (pageId) => {
+                pages.forEach(page => {
+                    page.classList.toggle('active', page.id === pageId);
+                });
+            };
+
+            const updateStepButtons = () => {
+                document.getElementById('prev-btn').style.display = currentStep === 0 ? 'none' : 'inline-block';
+                document.getElementById('next-btn').style.display = currentStep === steps.length - 1 ? 'none' : 'inline-block';
+                checkBtn.style.display = currentStep === steps.length - 1 ? 'inline-block' : 'none';
+            };
+
+            const showStep = (stepIndex) => {
+                steps.forEach((step, index) => {
+                    step.classList.toggle('active', index === stepIndex);
+                });
+                currentStep = stepIndex;
+                updateStepButtons();
+            };
+
+            startBtn.addEventListener('click', () => {
+                showPage('activity-page');
+                showStep(0);
+            });
+
+            document.getElementById('next-btn').addEventListener('click', () => {
+                if (currentStep < steps.length - 1) showStep(currentStep + 1);
+            });
+
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                if (currentStep > 0) showStep(currentStep - 1);
+            });
+            
+            const normalizeString = str => str.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s*et\s*|\s*\+\s*/, ' et ');
+
+            checkBtn.addEventListener('click', () => {
+                const inputs = activityForm.querySelectorAll('input[type="text"]');
+                let score = 0;
+                const totalQuestions = inputs.length;
+
+                inputs.forEach(input => {
+                    const userAnswer = normalizeString(input.value);
+                    const correctAnswers = input.dataset.answer.split('|');
+                    let isCorrect = correctAnswers.some(answer => userAnswer === normalizeString(answer));
+
+                    input.classList.remove('correct', 'incorrect');
+                    input.disabled = true;
+                    input.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    if (isCorrect) score++;
+                });
+                
+                const finalScore = ((score / totalQuestions) * 20).toFixed(1);
+                scoreElement.textContent = `Votre note est de : ${finalScore} / 20`;
+                
+                const percentage = (score / totalQuestions) * 100;
+                let appreciationText = '';
+                if (percentage === 100) { appreciationText = "Excellent travail ! Toutes vos réponses sont correctes."; scoreElement.style.color = 'var(--correct-color)'; } 
+                else if (percentage >= 75) { appreciationText = "Très bon score ! Vous maîtrisez bien le sujet."; scoreElement.style.color = '#3498db'; } 
+                else if (percentage >= 50) { appreciationText = "Bon début. Revoyez les points incorrects pour vous améliorer."; scoreElement.style.color = '#f39c12'; } 
+                else { appreciationText = "Continuez vos efforts. N'hésitez pas à revoir le tableau pour mieux comprendre."; scoreElement.style.color = 'var(--incorrect-color)'; }
+                appreciationElement.textContent = appreciationText;
+                
+                showPage('results-page');
+            });
+
+            showCorrectionBtn.addEventListener('click', () => {
+                showPage('activity-page');
+                steps.forEach(step => step.classList.add('active')); // Affiche toutes les étapes
+                navContainer.style.display = 'none';
+                correctionNav.style.display = 'block';
+            });
+
+            backToResultsBtn.addEventListener('click', () => {
+                showPage('results-page');
+            });
+            
+            restartBtn.addEventListener('click', () => {
+                activityForm.querySelectorAll('input[type="text"]').forEach(input => {
+                    input.value = '';
+                    input.classList.remove('correct', 'incorrect');
+                    input.disabled = false;
+                });
+                
+                currentStep = 0;
+                navContainer.style.display = 'flex';
+                correctionNav.style.display = 'none';
+                showPage('intro-page');
+            });
+
+            // Initialisation
+            showPage('intro-page');
+        });
+    </script>
+
+</body>
+</html>

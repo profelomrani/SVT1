@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercices Interactifs : Le Corps Humain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+        
+        .exercise-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .exercise-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            background: white;
+        }
+        
+        .option-btn:hover {
+            background: #f8fafc;
+            border-color: #3b82f6;
+            transform: translateX(4px);
+        }
+        
+        .option-btn.selected {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+        
+        .check-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            text-align: center;
+            font-weight: 700;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .feedback {
+            margin-top: 16px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: none;
+            border-left: 4px solid;
+        }
+        
+        .feedback.correct {
+            background: #dcfce7;
+            color: #166534;
+            border-left-color: #22c55e;
+        }
+        
+        .feedback.incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left-color: #ef4444;
+        }
+        
+        .match-item {
+            cursor: pointer;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            background: white;
+            font-weight: 500;
+        }
+        
+        .match-item:hover {
+            border-color: #3b82f6;
+            transform: translateX(4px);
+        }
+        
+        .match-item.selected {
+            border-color: #3b82f6;
+            background: #dbeafe;
+        }
+        
+        .match-item.correct-match {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+        }
+        
+        .match-item.incorrect-match {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        
+        .score-display {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 24px;
+        }
+        
+        .progress-bar {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .drag-item {
+            cursor: grab;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            background: white;
+            font-weight: 500;
+            user-select: none;
+        }
+        
+        .drag-item:hover {
+            border-color: #3b82f6;
+            transform: translateX(4px);
+        }
+        
+        .drag-item:active {
+            cursor: grabbing;
+        }
+        
+        .drop-zone {
+            min-height: 80px;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            padding: 16px;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+            position: relative;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: #3b82f6;
+            background: #dbeafe;
+            transform: scale(1.02);
+        }
+        
+        .drop-zone-category {
+            min-height: 120px;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+        }
+        
+        .drop-zone-category.drag-over {
+            border-color: #3b82f6;
+            background: #dbeafe;
+            transform: scale(1.02);
+        }
+        
+        .drop-placeholder {
+            color: #6b7280;
+            font-weight: 500;
+            text-align: center;
+            padding: 8px;
+        }
+        
+        .category-header {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .organ-container {
+            min-height: 40px;
+            margin: 8px 0;
+        }
+        
+        .dropped-item {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl sm:text-5xl font-bold text-slate-800 mb-4">🫀 Les Systèmes et Appareils du Corps Humain</h1>
+            <p class="text-xl text-slate-600">Apprends comment les systèmes et appareils travaillent ensemble !</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="overall-progress" style="width: 0%"></div>
+            </div>
+            <p class="text-sm text-slate-500 mt-2">Progression globale: <span id="progress-text">0/4 exercices</span></p>
+        </header>
+
+        <!-- Exercice 1: QCM sur les systèmes -->
+        <div class="exercise-card" id="qcm-card">
+            <h2 class="text-2xl font-bold text-slate-700 mb-2">🧠 Exercice 1 : Systèmes du Corps</h2>
+            <p class="text-slate-600 mb-6">Choisis la bonne réponse pour chaque question.</p>
+            
+            <div id="qcm-questions">
+                <div class="bg-blue-50 p-4 rounded-lg mb-6 question-block" data-question="1">
+                    <p class="font-semibold text-slate-800 mb-4">Question 1/3: Quel système contrôle toutes les fonctions du corps ?</p>
+                    <button class="option-btn" onclick="selectQCMOption(this, false, 1)">Le système respiratoire</button>
+                    <button class="option-btn" onclick="selectQCMOption(this, false, 1)">Le système digestif</button>
+                    <button class="option-btn" onclick="selectQCMOption(this, true, 1)">Le système nerveux</button>
+                    <button class="option-btn" onclick="selectQCMOption(this, false, 1)">Le système circulatoire</button>
+                </div>
+                
+                <div class="bg-green-50 p-4 rounded-lg mb-6 question-block" data-question="2" style="display: none;">
+                    <p class="font-semibold text-slate-800 mb-4">Question 2/3: Quel appareil transforme les aliments en nutriments ?</p>
+                    <button class="option-btn" onclick="selectQCMOption(this, false, 2)">L'appareil urinaire</button>
+                    <button class="option-btn" onclick="selectQCMOption(this, false, 2)">L'appareil circulatoire</button>
+                    <button class="option-btn" onclick="selectQCMOption(this, false, 2)">L'appareil respiratoire</button>
+                    <button class="option-btn" onclick="selectQCMOption(this, true, 2)">L'appareil digestif</button>
+                </div>
+                
+                <div class="bg-purple-50 p-4 rounded-lg mb-6 question-block" data-question="3" style="display: none;">
+                    <p class="font-semibold text-slate-800 mb-4">Question 3/3: Quel système permet les mouvements du corps ?</p>
+                    <button class="option-btn" onclick="selectQCMOption(this, false, 3)">Le système circulatoire</button>
+                    <button class="option-btn" onclick="selectQCMOption(this, true, 3)">Le système musculo-squelettique</button>
+                    <button class="option-btn" onclick="selectQCMOption(this, false, 3)">Le système respiratoire</button>
+                    <button class="option-btn" onclick="selectQCMOption(this, false, 3)">Le système nerveux</button>
+                </div>
+            </div>
+            
+            <button class="check-btn" onclick="nextQCMQuestion()" id="qcm-check">Question suivante</button>
+            
+            <div class="feedback" id="qcm-feedback"></div>
+        </div>
+
+        <!-- Exercice 2: Association Systèmes/Appareils -->
+        <div class="exercise-card" id="matching-card">
+            <h2 class="text-2xl font-bold text-slate-700 mb-2">🔗 Exercice 2 : Association</h2>
+            <p class="text-slate-600 mb-6">Glisse chaque système ou appareil vers sa fonction correspondante.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-4 text-blue-600">Systèmes et Appareils</h3>
+                    <div class="drag-item" draggable="true" data-system="nervous" ondragstart="dragStart(event)">
+                        🧠 Système nerveux
+                    </div>
+                    <div class="drag-item" draggable="true" data-system="digestive" ondragstart="dragStart(event)">
+                        🍎 Appareil digestif
+                    </div>
+                    <div class="drag-item" draggable="true" data-system="respiratory" ondragstart="dragStart(event)">
+                        🫁 Appareil respiratoire
+                    </div>
+                    <div class="drag-item" draggable="true" data-system="musculoskeletal" ondragstart="dragStart(event)">
+                        💪 Système musculo-squelettique
+                    </div>
+                    <div class="drag-item" draggable="true" data-system="circulatory" ondragstart="dragStart(event)">
+                        ❤️ Système circulatoire
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4 text-green-600">Fonctions</h3>
+                    <div class="drop-zone" data-function="movement" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div class="drop-placeholder">Mouvement et soutien du corps</div>
+                    </div>
+                    <div class="drop-zone" data-function="control" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div class="drop-placeholder">Contrôle et coordination</div>
+                    </div>
+                    <div class="drop-zone" data-function="breathing" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div class="drop-placeholder">Échange d'oxygène et de CO₂</div>
+                    </div>
+                    <div class="drop-zone" data-function="nutrition" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div class="drop-placeholder">Digestion et absorption des aliments</div>
+                    </div>
+                    <div class="drop-zone" data-function="transport" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div class="drop-placeholder">Transport du sang et des nutriments</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <p class="text-sm text-slate-600">Associations réussies: <span id="match-counter" class="font-bold text-blue-600">0/5</span></p>
+            </div>
+            
+            <button class="check-btn" onclick="checkMatching()" id="matching-check">Vérifier mes associations</button>
+            
+            <div class="feedback" id="matching-feedback"></div>
+        </div>
+
+        <!-- Exercice 3: Vrai/Faux -->
+        <div class="exercise-card" id="truefalse-card">
+            <h2 class="text-2xl font-bold text-slate-700 mb-2">✅ Exercice 3 : Vrai ou Faux</h2>
+            <p class="text-slate-600 mb-6">Détermine si ces affirmations sont vraies ou fausses.</p>
+            
+            <div class="space-y-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="font-semibold mb-4">1. Le cœur fait partie du système circulatoire.</p>
+                    <div class="flex gap-4">
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, true, 1)">✅ Vrai</button>
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, false, 1)">❌ Faux</button>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="font-semibold mb-4">2. Les poumons appartiennent à l'appareil digestif.</p>
+                    <div class="flex gap-4">
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, true, 2)">✅ Vrai</button>
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, false, 2)">❌ Faux</button>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="font-semibold mb-4">3. Le système nerveux coordonne tous les autres systèmes.</p>
+                    <div class="flex gap-4">
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, true, 3)">✅ Vrai</button>
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, false, 3)">❌ Faux</button>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="font-semibold mb-4">4. Les muscles travaillent indépendamment du système nerveux.</p>
+                    <div class="flex gap-4">
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, true, 4)">✅ Vrai</button>
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, false, 4)">❌ Faux</button>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="font-semibold mb-4">5. L'appareil digestif et le système circulatoire travaillent ensemble.</p>
+                    <div class="flex gap-4">
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, true, 5)">✅ Vrai</button>
+                        <button class="option-btn flex-1" onclick="selectTrueFalse(this, false, 5)">❌ Faux</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="check-btn" onclick="checkTrueFalse()" id="truefalse-check">Vérifier mes réponses</button>
+            
+            <div class="feedback" id="truefalse-feedback"></div>
+        </div>
+
+        <!-- Exercice 4: Glisser-Déposer -->
+        <div class="exercise-card" id="dragdrop-card">
+            <h2 class="text-2xl font-bold text-slate-700 mb-2">🎯 Exercice 4 : Classification</h2>
+            <p class="text-slate-600 mb-6">Glisse ces organes dans le bon système ou appareil.</p>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="font-bold text-lg mb-4 text-purple-600">Organes à classer</h3>
+                    <div id="organs-list">
+                        <div class="drag-item" draggable="true" data-organ="brain" ondragstart="dragStartOrgan(event)">🧠 Cerveau</div>
+                        <div class="drag-item" draggable="true" data-organ="stomach" ondragstart="dragStartOrgan(event)">🫃 Estomac</div>
+                        <div class="drag-item" draggable="true" data-organ="bones" ondragstart="dragStartOrgan(event)">🦴 Os</div>
+                        <div class="drag-item" draggable="true" data-organ="heart" ondragstart="dragStartOrgan(event)">❤️ Cœur</div>
+                        <div class="drag-item" draggable="true" data-organ="lungs" ondragstart="dragStartOrgan(event)">🫁 Poumons</div>
+                        <div class="drag-item" draggable="true" data-organ="muscles" ondragstart="dragStartOrgan(event)">💪 Muscles</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4 text-blue-600">Systèmes</h3>
+                    <div class="drop-zone-category" data-category="circulatory-sys" ondrop="dropOrgan(event)" ondragover="allowDrop(event)">
+                        <div class="category-header">Système Circulatoire</div>
+                        <div class="organ-container" id="circulatory-sys-organs"></div>
+                        <div class="text-sm text-gray-600 mt-1" id="circulatory-sys-count">0 organe(s)</div>
+                    </div>
+                    <div class="drop-zone-category" data-category="nervous-sys" ondrop="dropOrgan(event)" ondragover="allowDrop(event)">
+                        <div class="category-header">Système Nerveux</div>
+                        <div class="organ-container" id="nervous-sys-organs"></div>
+                        <div class="text-sm text-gray-600 mt-1" id="nervous-sys-count">0 organe(s)</div>
+                    </div>
+                    <div class="drop-zone-category" data-category="musculoskeletal-sys" ondrop="dropOrgan(event)" ondragover="allowDrop(event)">
+                        <div class="category-header">Système Musculo-squelettique</div>
+                        <div class="organ-container" id="musculoskeletal-sys-organs"></div>
+                        <div class="text-sm text-gray-600 mt-1" id="musculoskeletal-sys-count">0 organe(s)</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4 text-green-600">Appareils</h3>
+                    <div class="drop-zone-category" data-category="respiratory-app" ondrop="dropOrgan(event)" ondragover="allowDrop(event)">
+                        <div class="category-header">Appareil Respiratoire</div>
+                        <div class="organ-container" id="respiratory-app-organs"></div>
+                        <div class="text-sm text-gray-600 mt-1" id="respiratory-app-count">0 organe(s)</div>
+                    </div>
+                    <div class="drop-zone-category" data-category="digestive-app" ondrop="dropOrgan(event)" ondragover="allowDrop(event)">
+                        <div class="category-header">Appareil Digestif</div>
+                        <div class="organ-container" id="digestive-app-organs"></div>
+                        <div class="text-sm text-gray-600 mt-1" id="digestive-app-count">0 organe(s)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="check-btn" onclick="checkClassification()" id="classification-check">Vérifier ma classification</button>
+            
+            <div class="feedback" id="classification-feedback"></div>
+        </div>
+
+        <!-- Score final -->
+        <div class="score-display" id="final-score" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4">🎉 Félicitations !</h2>
+            <p class="text-xl mb-2">Score final : <span id="final-score-text">0/3</span></p>
+            <p class="text-lg opacity-90" id="final-message"></p>
+            <button class="check-btn mt-4" onclick="resetAllExercises()">Recommencer les exercices</button>
+        </div>
+    </div>
+
+    <script>
+        let exerciseScores = {
+            qcm: null,
+            matching: null,
+            truefalse: null,
+            classification: null
+        };
+        
+        // Variables pour le QCM amélioré
+        let currentQCMQuestion = 1;
+        let qcmAnswers = { 1: null, 2: null, 3: null };
+        
+        // Variables pour l'association
+        let selectedMatches = { system: null, function: null };
+        let matchedPairs = 0;
+        
+        // Variables pour vrai/faux
+        let trueFalseAnswers = { 1: null, 2: null, 3: null, 4: null, 5: null };
+        
+        // Variables pour la classification
+        let selectedOrgan = null;
+        let organClassifications = {};
+
+        // Fonctions pour le QCM amélioré
+        function selectQCMOption(button, isCorrect, questionNum) {
+            // Désélectionner les autres options de cette question
+            const questionBlock = button.closest('.question-block');
+            questionBlock.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Sélectionner cette option
+            button.classList.add('selected');
+            qcmAnswers[questionNum] = isCorrect;
+        }
+
+        function nextQCMQuestion() {
+            if (qcmAnswers[currentQCMQuestion] === null) {
+                alert('Veuillez sélectionner une réponse !');
+                return;
+            }
+            
+            const feedback = document.getElementById('qcm-feedback');
+            const currentBlock = document.querySelector(`[data-question="${currentQCMQuestion}"]`);
+            
+            // Afficher le feedback pour la question actuelle
+            if (qcmAnswers[currentQCMQuestion]) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '✅ Correct !';
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = '❌ Incorrect. Révise cette notion !';
+            }
+            
+            feedback.style.display = 'block';
+            
+            setTimeout(() => {
+                feedback.style.display = 'none';
+                currentBlock.style.display = 'none';
+                
+                if (currentQCMQuestion < 3) {
+                    currentQCMQuestion++;
+                    const nextBlock = document.querySelector(`[data-question="${currentQCMQuestion}"]`);
+                    nextBlock.style.display = 'block';
+                    
+                    if (currentQCMQuestion === 3) {
+                        document.getElementById('qcm-check').textContent = 'Terminer le QCM';
+                    }
+                } else {
+                    // Calculer le score final du QCM
+                    const correctAnswers = Object.values(qcmAnswers).filter(answer => answer === true).length;
+                    exerciseScores.qcm = correctAnswers / 3;
+                    
+                    feedback.className = 'feedback correct';
+                    feedback.innerHTML = `🎉 QCM terminé ! Score: ${correctAnswers}/3`;
+                    feedback.style.display = 'block';
+                    
+                    document.getElementById('qcm-check').style.display = 'none';
+                    updateProgress();
+                }
+            }, 1500);
+        }
+
+        // Fonctions pour le glisser-déposer - Association
+        function dragStart(event) {
+            event.dataTransfer.setData('text/plain', event.target.dataset.system);
+            event.target.style.opacity = '0.5';
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('drag-over');
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drag-over');
+            
+            const systemId = event.dataTransfer.getData('text/plain');
+            const functionId = event.currentTarget.dataset.function;
+            
+            const correctMatches = {
+                'respiratory': 'breathing',
+                'circulatory': 'transport',
+                'digestive': 'nutrition',
+                'nervous': 'control',
+                'musculoskeletal': 'movement'
+            };
+            
+            const draggedElement = document.querySelector(`[data-system="${systemId}"]`);
+            
+            if (correctMatches[systemId] === functionId) {
+                // Association correcte
+                const dropZone = event.currentTarget;
+                const placeholder = dropZone.querySelector('.drop-placeholder');
+                
+                // Créer l'élément déposé
+                const droppedItem = document.createElement('div');
+                droppedItem.className = 'dropped-item';
+                droppedItem.innerHTML = draggedElement.innerHTML;
+                
+                // Remplacer le placeholder
+                placeholder.style.display = 'none';
+                dropZone.appendChild(droppedItem);
+                
+                // Cacher l'élément original
+                draggedElement.style.display = 'none';
+                draggedElement.style.opacity = '1';
+                
+                matchedPairs++;
+                document.getElementById('match-counter').textContent = `${matchedPairs}/5`;
+                
+                // Animation de succès
+                droppedItem.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    droppedItem.style.transform = 'scale(1)';
+                }, 300);
+            } else {
+                // Association incorrecte
+                draggedElement.style.opacity = '1';
+                draggedElement.style.background = '#fee2e2';
+                draggedElement.style.borderColor = '#ef4444';
+                
+                setTimeout(() => {
+                    draggedElement.style.background = 'white';
+                    draggedElement.style.borderColor = '#e5e7eb';
+                }, 1500);
+            }
+        }
+
+        document.addEventListener('dragend', function(event) {
+            event.target.style.opacity = '1';
+        });
+
+        document.addEventListener('dragleave', function(event) {
+            if (event.target.classList.contains('drop-zone')) {
+                event.target.classList.remove('drag-over');
+            }
+        });
+
+        function checkMatching() {
+            const feedback = document.getElementById('matching-feedback');
+            
+            if (matchedPairs === 5) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '🎉 Parfait ! Toutes les associations sont correctes !';
+                exerciseScores.matching = 1;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `❌ ${matchedPairs}/5 associations correctes. Continue !`;
+                exerciseScores.matching = matchedPairs / 5;
+            }
+            
+            feedback.style.display = 'block';
+            document.getElementById('matching-check').style.display = 'none';
+            updateProgress();
+        }
+
+        // Fonctions pour vrai/faux amélioré
+        function selectTrueFalse(button, answer, questionNum) {
+            const questionDiv = button.closest('.bg-gray-50');
+            questionDiv.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            button.classList.add('selected');
+            trueFalseAnswers[questionNum] = answer;
+        }
+
+        function checkTrueFalse() {
+            const correctAnswers = { 1: true, 2: false, 3: true, 4: false, 5: true };
+            let correctCount = 0;
+            
+            for (let i = 1; i <= 5; i++) {
+                if (trueFalseAnswers[i] === correctAnswers[i]) {
+                    correctCount++;
+                }
+            }
+            
+            const feedback = document.getElementById('truefalse-feedback');
+            
+            if (correctCount === 5) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '🎉 Excellent ! Toutes tes réponses sont correctes !';
+                exerciseScores.truefalse = 1;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `❌ ${correctCount}/5 réponses correctes. Bonnes réponses : 1-Vrai, 2-Faux, 3-Vrai, 4-Faux, 5-Vrai`;
+                exerciseScores.truefalse = correctCount / 5;
+            }
+            
+            feedback.style.display = 'block';
+            document.getElementById('truefalse-check').style.display = 'none';
+            updateProgress();
+        }
+
+        // Fonctions pour le glisser-déposer - Classification
+        function dragStartOrgan(event) {
+            event.dataTransfer.setData('text/plain', event.target.dataset.organ);
+            event.target.style.opacity = '0.5';
+        }
+
+        function dropOrgan(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drag-over');
+            
+            const organId = event.dataTransfer.getData('text/plain');
+            const categoryId = event.currentTarget.dataset.category;
+            
+            const draggedElement = document.querySelector(`[data-organ="${organId}"]`);
+            const organContainer = event.currentTarget.querySelector('.organ-container');
+            
+            // Enregistrer la classification
+            organClassifications[organId] = categoryId;
+            
+            // Créer l'élément déposé
+            const droppedOrgan = document.createElement('div');
+            droppedOrgan.className = 'dropped-item';
+            droppedOrgan.innerHTML = draggedElement.innerHTML;
+            droppedOrgan.dataset.organ = organId;
+            
+            // Ajouter à la catégorie
+            organContainer.appendChild(droppedOrgan);
+            
+            // Cacher l'élément original
+            draggedElement.style.display = 'none';
+            draggedElement.style.opacity = '1';
+            
+            // Mettre à jour le compteur
+            updateCategoryCount(categoryId);
+            
+            // Animation de succès
+            droppedOrgan.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                droppedOrgan.style.transform = 'scale(1)';
+            }, 300);
+            
+            // Vérifier si tous les organes sont classés
+            if (Object.keys(organClassifications).length === 6) {
+                document.getElementById('classification-check').style.display = 'block';
+            }
+        }
+
+        function updateCategoryCount(categoryId) {
+            const count = Object.values(organClassifications).filter(cat => cat === categoryId).length;
+            document.getElementById(`${categoryId}-count`).textContent = `${count} organe(s)`;
+        }
+
+        document.addEventListener('dragleave', function(event) {
+            if (event.target.classList.contains('drop-zone-category')) {
+                event.target.classList.remove('drag-over');
+            }
+        });
+
+        function checkClassification() {
+            const correctClassifications = {
+                'heart': 'circulatory-sys',
+                'lungs': 'respiratory-app',
+                'stomach': 'digestive-app',
+                'brain': 'nervous-sys',
+                'muscles': 'musculoskeletal-sys',
+                'bones': 'musculoskeletal-sys'
+            };
+            
+            let correctCount = 0;
+            for (const organ in organClassifications) {
+                if (organClassifications[organ] === correctClassifications[organ]) {
+                    correctCount++;
+                }
+            }
+            
+            const feedback = document.getElementById('classification-feedback');
+            
+            if (correctCount === 6) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '🎉 Parfait ! Tous les organes sont bien classés !';
+                exerciseScores.classification = 1;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `❌ ${correctCount}/6 classifications correctes. Révise les systèmes et appareils !`;
+                exerciseScores.classification = correctCount / 6;
+            }
+            
+            feedback.style.display = 'block';
+            document.getElementById('classification-check').style.display = 'none';
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const completedExercises = Object.values(exerciseScores).filter(score => score !== null).length;
+            const totalScore = Object.values(exerciseScores).reduce((sum, score) => sum + (score || 0), 0);
+            
+            // Mettre à jour la barre de progression
+            const progressPercent = (completedExercises / 4) * 100;
+            document.getElementById('overall-progress').style.width = progressPercent + '%';
+            document.getElementById('progress-text').textContent = `${completedExercises}/4 exercices`;
+            
+            // Afficher le score final si tous les exercices sont terminés
+            if (completedExercises === 4) {
+                showFinalScore(totalScore);
+            }
+        }
+
+        function showFinalScore(score) {
+            const finalScoreDiv = document.getElementById('final-score');
+            const scoreText = document.getElementById('final-score-text');
+            const messageText = document.getElementById('final-message');
+            
+            const percentage = Math.round((score / 4) * 100);
+            scoreText.textContent = `${percentage}%`;
+            
+            if (percentage >= 90) {
+                messageText.textContent = 'Excellent ! Tu maîtrises parfaitement les systèmes et appareils du corps humain !';
+            } else if (percentage >= 75) {
+                messageText.textContent = 'Très bien ! Tu as une bonne compréhension des systèmes corporels.';
+            } else if (percentage >= 60) {
+                messageText.textContent = 'Pas mal ! Continue à étudier pour mieux comprendre.';
+            } else {
+                messageText.textContent = 'N\'abandonne pas ! Révise les leçons et essaie encore.';
+            }
+            
+            finalScoreDiv.style.display = 'block';
+            finalScoreDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetAllExercises() {
+            // Réinitialiser toutes les variables
+            exerciseScores = { qcm: null, matching: null, truefalse: null, classification: null };
+            currentQCMQuestion = 1;
+            qcmAnswers = { 1: null, 2: null, 3: null };
+            selectedMatches = { system: null, function: null };
+            matchedPairs = 0;
+            trueFalseAnswers = { 1: null, 2: null, 3: null, 4: null, 5: null };
+            selectedOrgan = null;
+            organClassifications = {};
+            
+            // Réinitialiser l'interface
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('.match-item').forEach(item => {
+                item.classList.remove('selected', 'correct-match', 'incorrect-match');
+                item.style.display = 'block';
+                item.style.transform = 'scale(1)';
+            });
+            
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.style.display = 'block';
+                item.style.opacity = '1';
+                item.style.background = 'white';
+                item.style.borderColor = '#e5e7eb';
+            });
+            
+            document.querySelectorAll('.drop-zone .drop-placeholder').forEach(placeholder => {
+                placeholder.style.display = 'block';
+            });
+            
+            document.querySelectorAll('.dropped-item').forEach(item => {
+                item.remove();
+            });
+            
+            document.querySelectorAll('.organ-container').forEach(container => {
+                container.innerHTML = '';
+            });
+            
+            document.querySelectorAll('.feedback').forEach(feedback => {
+                feedback.style.display = 'none';
+            });
+            
+            document.querySelectorAll('.check-btn').forEach(btn => {
+                btn.style.display = 'block';
+            });
+            
+            // Réinitialiser le QCM
+            document.querySelectorAll('.question-block').forEach((block, index) => {
+                block.style.display = index === 0 ? 'block' : 'none';
+            });
+            document.getElementById('qcm-check').textContent = 'Question suivante';
+            
+            // Réinitialiser les compteurs
+            document.getElementById('match-counter').textContent = '0/5';
+            document.querySelectorAll('[id$="-count"]').forEach(counter => {
+                counter.textContent = '0 organe(s)';
+            });
+            
+            document.getElementById('final-score').style.display = 'none';
+            document.getElementById('overall-progress').style.width = '0%';
+            document.getElementById('progress-text').textContent = '0/4 exercices';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98765812f051cfe2',t:'MTc1OTI2MjgyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

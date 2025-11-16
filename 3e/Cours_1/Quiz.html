@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz interactif – Les aliments et leurs constituants</title>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    :root{
+      --primary:#2563eb;
+      --ok:#16a34a;
+      --warn:#dc2626;
+      --bg:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card:#ffffff;
+      --text:#0f172a;
+      --shadow:0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    html,body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+      min-height:100%;
+    }
+    
+    .container{
+      max-width:900px;
+      margin:auto;
+      padding:20px;
+    }
+    
+    header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    
+    h1{
+      font-size:2.5rem;
+      margin:0 0 10px 0;
+      color:white;
+      text-shadow:2px 2px 4px rgba(0,0,0,0.3);
+      font-weight:700;
+    }
+    
+    .subtitle{
+      color:rgba(255,255,255,0.9);
+      font-size:1.1rem;
+      margin-bottom:20px;
+    }
+    
+    .card{
+      background:var(--card);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:20px;
+      margin-bottom:15px;
+      border:1px solid rgba(255,255,255,0.2);
+    }
+    
+    .progress{
+      height:12px;
+      background:rgba(255,255,255,0.3);
+      border-radius:999px;
+      overflow:hidden;
+      margin:20px 0;
+      backdrop-filter:blur(10px);
+    }
+    
+    .bar{
+      height:100%;
+      background:linear-gradient(90deg, #16a34a, #22c55e);
+      width:0%;
+      transition:width 0.5s ease;
+      border-radius:999px;
+    }
+    
+    .progress-label{
+      text-align:center;
+      color:white;
+      font-weight:600;
+      margin-top:10px;
+    }
+    
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      justify-content:center;
+      margin:20px 0;
+    }
+    
+    button{
+      appearance:none;
+      border:0;
+      border-radius:12px;
+      padding:12px 24px;
+      font-weight:600;
+      cursor:pointer;
+      transition:all 0.3s ease;
+      font-size:1rem;
+    }
+    
+    .btn-primary{
+      background:linear-gradient(135deg, var(--primary), #3b82f6);
+      color:white;
+      box-shadow:0 4px 15px rgba(37,99,235,0.3);
+    }
+    
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(37,99,235,0.4);
+    }
+    
+    .btn-correction{
+      background:linear-gradient(135deg, #f59e0b, #f97316);
+      color:white;
+      box-shadow:0 4px 15px rgba(245,158,11,0.3);
+    }
+    
+    .btn-correction:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(245,158,11,0.4);
+    }
+    
+    .btn-ghost{
+      background:rgba(255,255,255,0.1);
+      border:2px solid rgba(255,255,255,0.3);
+      color:white;
+      backdrop-filter:blur(10px);
+    }
+    
+    .btn-ghost:hover{
+      background:rgba(255,255,255,0.2);
+      transform:translateY(-2px);
+    }
+    
+    .btn-ok{
+      background:linear-gradient(135deg, var(--ok), #22c55e);
+      color:white;
+    }
+    
+    .btn-warn{
+      background:linear-gradient(135deg, var(--warn), #ef4444);
+      color:white;
+    }
+    
+    button:disabled{
+      background:#9ca3af !important;
+      cursor:not-allowed !important;
+      transform:none !important;
+      box-shadow:none !important;
+      opacity:0.6;
+    }
+    
+    button:disabled:hover{
+      transform:none !important;
+      box-shadow:none !important;
+    }
+    
+    fieldset{
+      border:0;
+      margin:0;
+      padding:0;
+    }
+    
+    .q{
+      border-top:2px solid #e5e7eb;
+      padding-top:25px;
+      margin-top:25px;
+      position:relative;
+    }
+    
+    .q:first-child{
+      border-top:none;
+      margin-top:0;
+      padding-top:0;
+    }
+    
+    .legend{
+      font-weight:700;
+      margin:0 0 15px;
+      font-size:1.1rem;
+      color:#1f2937;
+    }
+    
+    .question-number{
+      position:absolute;
+      top:-15px;
+      left:0;
+      background:var(--primary);
+      color:white;
+      border-radius:50%;
+      width:30px;
+      height:30px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      font-size:0.9rem;
+    }
+    
+    .options{
+      display:grid;
+      gap:12px;
+    }
+    
+    .opt{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      background:#f8fafc;
+      border:2px solid #e2e8f0;
+      border-radius:15px;
+      padding:15px;
+      cursor:pointer;
+      transition:all 0.3s ease;
+    }
+    
+    .opt:hover{
+      border-color:#cbd5e1;
+      transform:translateX(5px);
+    }
+    
+    .opt input{
+      margin-top:2px;
+      transform:scale(1.2);
+    }
+    
+    .opt.correct{
+      border-color:var(--ok);
+      background:linear-gradient(135deg, #ecfdf5, #f0fdf4);
+      box-shadow:0 4px 15px rgba(22,163,74,0.2);
+    }
+    
+    .opt.wrong{
+      border-color:var(--warn);
+      background:linear-gradient(135deg, #fef2f2, #fef7f7);
+      box-shadow:0 4px 15px rgba(220,38,38,0.2);
+    }
+    
+    .feedback{
+      margin:12px 0 0;
+      font-size:1rem;
+      font-weight:600;
+      padding:10px;
+      border-radius:10px;
+    }
+    
+    .feedback.ok{
+      color:var(--ok);
+      background:#ecfdf5;
+      border-left:4px solid var(--ok);
+    }
+    
+    .feedback.err{
+      color:var(--warn);
+      background:#fef2f2;
+      border-left:4px solid var(--warn);
+    }
+    
+    .score-card{
+      background:linear-gradient(135deg, #667eea, #764ba2);
+      color:white;
+      text-align:center;
+      padding:40px;
+      border-radius:20px;
+      margin:30px 0;
+      box-shadow:var(--shadow);
+    }
+    
+    .score{
+      font-size:3rem;
+      font-weight:900;
+      margin:20px 0;
+      text-shadow:2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .appreciation{
+      font-size:1.3rem;
+      font-weight:600;
+      margin:15px 0;
+      padding:15px;
+      background:rgba(255,255,255,0.1);
+      border-radius:15px;
+      backdrop-filter:blur(10px);
+    }
+    
+    .grade-details{
+      font-size:1.1rem;
+      margin-top:20px;
+      opacity:0.9;
+    }
+    
+    .hidden{
+      display:none;
+    }
+    
+    .consignes{
+      background:linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border-left:5px solid var(--primary);
+    }
+    
+    .consignes h2{
+      color:var(--primary);
+      margin-top:0;
+    }
+    
+    .muted{
+      color:#64748b;
+      line-height:1.6;
+    }
+    
+    .question-card{
+      min-height:300px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      padding:25px 20px;
+      text-align:center;
+      position:relative;
+    }
+    
+    .question-title{
+      font-size:1.4rem;
+      font-weight:700;
+      color:#1f2937;
+      margin-bottom:30px;
+      line-height:1.5;
+      padding:0 20px;
+    }
+    
+    .question-number-large{
+      position:absolute;
+      top:10px;
+      right:20px;
+      background:linear-gradient(135deg, var(--primary), #3b82f6);
+      color:white;
+      border-radius:50%;
+      width:50px;
+      height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      font-size:1.2rem;
+      box-shadow:0 4px 15px rgba(37,99,235,0.3);
+    }
+    
+    .options-grid{
+      display:grid;
+      gap:15px;
+      max-width:600px;
+      margin:0 auto;
+    }
+    
+    .option-card{
+      background:linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border:3px solid #e2e8f0;
+      border-radius:20px;
+      padding:20px;
+      cursor:pointer;
+      transition:all 0.4s ease;
+      position:relative;
+      overflow:hidden;
+      text-align:left;
+      display:flex;
+      align-items:center;
+    }
+    
+    .option-card:hover{
+      transform:translateY(-5px);
+      border-color:#cbd5e1;
+      box-shadow:0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .option-card.selected{
+      border-color:var(--primary);
+      background:linear-gradient(135deg, #dbeafe, #bfdbfe);
+      box-shadow:0 8px 25px rgba(37,99,235,0.2);
+    }
+    
+    .option-card.correct{
+      border-color:var(--ok);
+      background:linear-gradient(135deg, #ecfdf5, #d1fae5);
+      box-shadow:0 8px 25px rgba(22,163,74,0.3);
+    }
+    
+    .option-card.wrong{
+      border-color:var(--warn);
+      background:linear-gradient(135deg, #fef2f2, #fecaca);
+      box-shadow:0 8px 25px rgba(220,38,38,0.3);
+    }
+    
+    .option-letter{
+      display:inline-block;
+      background:var(--primary);
+      color:white;
+      border-radius:50%;
+      width:35px;
+      height:35px;
+      line-height:35px;
+      text-align:center;
+      font-weight:700;
+      margin-right:15px;
+      font-size:1.1rem;
+    }
+    
+    .option-text{
+      font-size:1.1rem;
+      font-weight:600;
+      color:#374151;
+      line-height:1.4;
+    }
+    
+    .navigation-controls{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top:25px;
+      padding-top:20px;
+      border-top:2px solid #e5e7eb;
+    }
+    
+    .question-indicator{
+      background:linear-gradient(135deg, #667eea, #764ba2);
+      color:white;
+      padding:12px 24px;
+      border-radius:25px;
+      font-weight:700;
+      font-size:1.1rem;
+      box-shadow:0 4px 15px rgba(102,126,234,0.3);
+    }
+    
+    .feedback-card{
+      margin-top:25px;
+      padding:20px;
+      border-radius:15px;
+      font-weight:600;
+      text-align:left;
+      animation:slideIn 0.5s ease;
+    }
+    
+    .feedback-card.ok{
+      background:linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border-left:5px solid var(--ok);
+      color:#065f46;
+    }
+    
+    .feedback-card.err{
+      background:linear-gradient(135deg, #fef2f2, #fecaca);
+      border-left:5px solid var(--warn);
+      color:#991b1b;
+    }
+    
+    @keyframes slideIn{
+      from{opacity:0; transform:translateY(20px);}
+      to{opacity:1; transform:translateY(0);}
+    }
+    
+    .final-controls{
+      background:linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border:2px solid var(--primary);
+    }
+    
+    @media (max-width: 768px){
+      h1{font-size:2rem;}
+      .container{padding:15px;}
+      .card{padding:20px;}
+      .controls{flex-direction:column;}
+      button{width:100%;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🧪 Quiz Scientifique</h1>
+      <div class="subtitle">Composition chimique des aliments : Pain et Lait</div>
+      <div class="progress hidden" id="progressSection">
+        <div id="progressBar" class="bar"></div>
+      </div>
+      <div class="progress-label hidden" id="progressLabel">0 / 10 répondues</div>
+    </header>
+
+    <section class="card consignes" id="welcomeScreen">
+      <h2>📋 Consignes</h2>
+      <p class="muted">
+        • <strong>Sujet :</strong> Mettre en évidence la composition chimique des aliments<br>
+        • <strong>Focus :</strong> Étude du pain et du lait (eau, amidon, protides, calcium, glucose...)<br>
+        • <strong>Instructions :</strong> Lis chaque question attentivement et choisis la bonne réponse<br>
+        • <strong>Évaluation :</strong> Réponds à toutes les questions avant de vérifier tes réponses
+      </p>
+      <div class="controls">
+        <button class="btn-primary" id="btnStart">🚀 Commencer le Quiz</button>
+      </div>
+    </section>
+
+    <main id="quiz" class="card hidden">
+      <div id="questionCard" class="question-card">
+        <!-- Question content will be inserted here -->
+      </div>
+      
+      <div class="navigation-controls">
+        <button class="btn-ghost" id="btnPrev" disabled>← Précédent</button>
+        <div class="question-indicator">
+          <span id="currentQ">1</span> / <span id="totalQ">10</span>
+        </div>
+        <button class="btn-primary" id="btnNext">Suivant →</button>
+      </div>
+    </main>
+    
+    <section class="card final-controls hidden" id="finalControls" style="text-align: center;">
+      <h3 style="margin-top: 0; color: #1f2937;">🎯 Quiz terminé !</h3>
+      <p style="color: #64748b; margin-bottom: 20px;">Tu as répondu à toutes les questions. Vérifie tes réponses !</p>
+      <div class="controls">
+        <button class="btn-primary" id="btnCheckAll">✅ Vérifier tout</button>
+      </div>
+      <div class="controls" style="margin-top: 10px;">
+        <button class="btn-ghost" id="btnRetry">🔄 Recommencer</button>
+      </div>
+    </section>
+    
+    <div id="finalScore" class="hidden"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: "Comment met-on en évidence l'amidon dans le pain ?",
+        options: ["En ajoutant de l'oxalate d'ammonium au filtrat de pain", "En versant de l'acide nitrique sur un morceau de pain", "En déposant de l'eau iodée sur un morceau de pain"],
+        correct: 2,
+        explanation: "L'eau iodée permet de mettre en évidence l'amidon : elle devient bleue-violette en présence d'amidon."
+      },
+      {
+        q: "Comment met-on en évidence les protides dans le pain ?",
+        options: ["En versant de l'acide nitrique sur un morceau de pain", "En ajoutant de l'eau iodée au filtrat de pain", "En testant le filtrat de pain avec la liqueur de Fehling à chaud"],
+        correct: 0,
+        explanation: "L'acide nitrique permet de mettre en évidence les protides : il donne une coloration jaune."
+      },
+      {
+        q: "Quelle est l'étape suivante après avoir broyé du pain dans de l'eau distillée ?",
+        options: ["On verse de l'acide nitrique sur la bouillie", "On filtre la bouillie et on récupère le filtrat", "On ajoute de l'oxalate d'ammonium à la bouillie"],
+        correct: 1,
+        explanation: "Après avoir broyé le pain dans l'eau, il faut filtrer pour séparer les parties solubles (filtrat) des parties insolubles."
+      },
+      {
+        q: "Comment met-on en évidence la présence de calcium dans le filtrat de pain ?",
+        options: ["En ajoutant quelques gouttes de nitrate d'argent", "En testant le filtrat avec la liqueur de Fehling à chaud", "En ajoutant de l'oxalate d'ammonium au filtrat"],
+        correct: 2,
+        explanation: "L'oxalate d'ammonium forme un précipité blanc avec le calcium, permettant de le mettre en évidence."
+      },
+      {
+        q: "Lequel de ces aliments contient de l'amidon ?",
+        options: ["Le pain seulement", "Le lait seulement", "Le pain et le lait"],
+        correct: 0,
+        explanation: "Seul le pain contient de l'amidon. Le lait n'en contient pas."
+      },
+      {
+        q: "Lequel de ces aliments contient du glucose (sucre réducteur) ?",
+        options: ["Le pain seulement", "Le lait seulement", "Le pain et le lait"],
+        correct: 2,
+        explanation: "Le pain et le lait contiennent tous les deux du glucose (sucre réducteur)."
+      },
+      {
+        q: "Pour préparer un filtrat de lait, quelle est la première étape ?",
+        options: ["Ajouter un peu de vinaigre au lait", "Filtrer directement le lait", "Chauffer le lait"],
+        correct: 0,
+        explanation: "On ajoute d'abord du vinaigre au lait pour faire coaguler les protéines avant de filtrer."
+      },
+      {
+        q: "Que contiennent à la fois le pain et le lait ?",
+        options: ["De l'eau, des protides, du sel de chlorure et du calcium", "De l'amidon et du glucose", "Seulement de l'eau"],
+        correct: 0,
+        explanation: "Le pain et le lait contiennent tous les deux de l'eau, des protides, du sel de chlorure et du calcium."
+      },
+      {
+        q: "Pourquoi dit-on que le lait est un aliment complet ?",
+        options: ["Parce qu'il contient beaucoup d'eau", "Parce qu'il contient presque tous les aliments simples", "Parce qu'il ne contient que des protides"],
+        correct: 1,
+        explanation: "Le lait est considéré comme un aliment complet car il contient presque tous les aliments simples nécessaires."
+      },
+      {
+        q: "Pourquoi dit-on que le pain est un aliment non complet ?",
+        options: ["Parce qu'il ne contient pas d'eau", "Parce qu'il est pauvre en certains aliments simples comme les lipides", "Parce qu'il ne contient que de l'amidon"],
+        correct: 1,
+        explanation: "Le pain est considéré comme non complet car il est pauvre en certains aliments simples, notamment les lipides."
+      }
+    ];
+
+    let currentQuestions = [];
+    let userAnswers = {};
+    let showingAnswers = false;
+    let currentQuestionIndex = 0;
+
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function shuffleQuestions() {
+      currentQuestions = shuffleArray(questions).map((q, index) => ({
+        ...q,
+        id: index,
+        shuffledOptions: shuffleArray(q.options.map((opt, i) => ({ text: opt, originalIndex: i })))
+      }));
+    }
+
+    function renderCurrentQuestion() {
+      const questionCard = document.getElementById('questionCard');
+      const q = currentQuestions[currentQuestionIndex];
+      
+      questionCard.innerHTML = `
+        <div class="question-number-large">${currentQuestionIndex + 1}</div>
+        <div class="question-title">${q.q}</div>
+        <div class="options-grid">
+          ${q.shuffledOptions.map((option, optIndex) => `
+            <div class="option-card" data-q="${q.id}" data-original="${option.originalIndex}" onclick="selectOption(this, ${q.id}, ${option.originalIndex})">
+              <span class="option-letter">${String.fromCharCode(65 + optIndex)}</span>
+              <span class="option-text">${option.text}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="feedback-card hidden" id="feedback${q.id}"></div>
+      `;
+      
+      // Marquer l'option sélectionnée si elle existe et afficher la correction
+      if (userAnswers[q.id] !== undefined) {
+        const selectedOption = questionCard.querySelector(`[data-original="${userAnswers[q.id]}"]`);
+        if (selectedOption) {
+          selectedOption.classList.add('selected');
+        }
+        // Afficher immédiatement la correction si déjà répondu
+        showImmediateCorrection(q.id, userAnswers[q.id]);
+      }
+      
+      updateNavigationButtons();
+      updateQuestionIndicator();
+    }
+
+    function selectOption(element, qId, originalIndex) {
+      if (showingAnswers) return;
+      
+      // Retirer la sélection précédente
+      const allOptions = element.parentNode.querySelectorAll('.option-card');
+      allOptions.forEach(opt => opt.classList.remove('selected'));
+      
+      // Ajouter la sélection à l'option cliquée
+      element.classList.add('selected');
+      
+      // Enregistrer la réponse
+      userAnswers[qId] = originalIndex;
+      updateProgress();
+      
+      // Afficher immédiatement la correction
+      showImmediateCorrection(qId, originalIndex);
+    }
+
+    function updateNavigationButtons() {
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+      
+      btnPrev.disabled = currentQuestionIndex === 0;
+      btnNext.disabled = false;
+      
+      if (currentQuestionIndex === currentQuestions.length - 1) {
+        btnNext.textContent = 'Terminer →';
+      } else {
+        btnNext.textContent = 'Suivant →';
+      }
+    }
+
+    function updateQuestionIndicator() {
+      document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
+      document.getElementById('totalQ').textContent = currentQuestions.length;
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < currentQuestions.length - 1) {
+        currentQuestionIndex++;
+        renderCurrentQuestion();
+      } else {
+        // Toutes les questions sont terminées
+        showFinalControls();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderCurrentQuestion();
+      }
+    }
+
+    function showFinalControls() {
+      document.getElementById('quiz').classList.add('hidden');
+      document.getElementById('finalControls').classList.remove('hidden');
+    }
+
+    function updateProgress() {
+      const answered = Object.keys(userAnswers).length;
+      const total = currentQuestions.length;
+      const percentage = (answered / total) * 100;
+      
+      document.getElementById('progressBar').style.width = percentage + '%';
+      document.getElementById('progressLabel').textContent = `${answered} / ${total} répondues`;
+      
+      // Activer le bouton "Vérifier tout" seulement si toutes les questions sont répondues
+      const checkButton = document.getElementById('btnCheckAll');
+      if (answered === total) {
+        checkButton.disabled = false;
+      } else {
+        checkButton.disabled = true;
+      }
+    }
+
+    function getAppreciation(score, total) {
+      const percentage = (score / total) * 100;
+      
+      if (percentage >= 90) {
+        return {
+          message: "🏆 Excellent ! Tu maîtrises parfaitement le sujet !",
+          grade: "A+",
+          comment: "Tes connaissances sur les aliments sont remarquables. Continue comme ça !"
+        };
+      } else if (percentage >= 80) {
+        return {
+          message: "🌟 Très bien ! Tu as de solides connaissances !",
+          grade: "A",
+          comment: "Tu comprends bien les principes de la nutrition. Bravo !"
+        };
+      } else if (percentage >= 70) {
+        return {
+          message: "👍 Bien joué ! Tu es sur la bonne voie !",
+          grade: "B",
+          comment: "Tes bases sont bonnes, continue à apprendre !"
+        };
+      } else if (percentage >= 60) {
+        return {
+          message: "💪 Pas mal ! Avec un peu plus d'effort, tu y arriveras !",
+          grade: "C",
+          comment: "Tu progresses bien, n'hésite pas à réviser certains points."
+        };
+      } else {
+        return {
+          message: "🌱 Continue tes efforts ! Chaque erreur est une leçon !",
+          grade: "D",
+          comment: "Ne te décourage pas, révise et recommence. Tu vas y arriver !"
+        };
+      }
+    }
+
+    function showFinalScore() {
+      const score = Object.keys(userAnswers).reduce((acc, qId) => {
+        const q = currentQuestions.find(question => question.id == qId);
+        return acc + (userAnswers[qId] === q.correct ? 1 : 0);
+      }, 0);
+      
+      const total = currentQuestions.length;
+      const appreciation = getAppreciation(score, total);
+      
+      document.getElementById('finalScore').innerHTML = `
+        <div class="score-card">
+          <h2>🎯 Résultats du Quiz</h2>
+          <div class="score">${score}/${total}</div>
+          <div class="appreciation">${appreciation.message}</div>
+          <div class="grade-details">
+            <strong>Note : ${appreciation.grade}</strong><br>
+            ${appreciation.comment}
+          </div>
+          <div style="margin-top: 30px;">
+            <button class="btn-ghost" onclick="document.getElementById('finalScore').classList.add('hidden')">
+              Fermer les résultats
+            </button>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('finalScore').classList.remove('hidden');
+      document.getElementById('finalScore').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function checkAnswers() {
+      showingAnswers = true;
+      currentQuestionIndex = 0;
+      
+      // Afficher le quiz avec les corrections
+      document.getElementById('quiz').classList.remove('hidden');
+      document.getElementById('finalControls').classList.add('hidden');
+      
+      renderCurrentQuestion();
+      showCorrectionsForCurrentQuestion();
+      showFinalScore();
+    }
+
+    function showImmediateCorrection(qId, userAnswer) {
+      const q = currentQuestions.find(question => question.id === qId);
+      const feedback = document.getElementById(`feedback${q.id}`);
+      const options = document.querySelectorAll('.option-card');
+      
+      // Désactiver les clics sur les options
+      options.forEach(opt => {
+        opt.style.pointerEvents = 'none';
+        const originalIndex = parseInt(opt.dataset.original);
+        
+        if (originalIndex === q.correct) {
+          opt.classList.add('correct');
+        } else if (userAnswer === originalIndex && userAnswer !== q.correct) {
+          opt.classList.add('wrong');
+        }
+      });
+      
+      const isCorrect = userAnswer === q.correct;
+      feedback.className = `feedback-card ${isCorrect ? 'ok' : 'err'}`;
+      
+      const appreciationText = isCorrect ? 
+        "🎉 Bravo ! Tu as trouvé la bonne réponse !" : 
+        "🤔 Pas tout à fait... Mais c'est en se trompant qu'on apprend !";
+      
+      feedback.innerHTML = `
+        <div style="font-size: 1.2rem; margin-bottom: 10px;">${appreciationText}</div>
+        ${isCorrect ? '✅' : '❌'} <strong>${isCorrect ? 'Correct' : 'Incorrect'} !</strong><br>
+        <div style="margin-top: 10px; font-weight: normal;">${q.explanation}</div>
+      `;
+      feedback.classList.remove('hidden');
+      
+      // Activer le bouton suivant après un délai
+      setTimeout(() => {
+        updateNavigationButtons();
+      }, 1000);
+    }
+
+    function showCorrectionsForCurrentQuestion() {
+      const q = currentQuestions[currentQuestionIndex];
+      const userAnswer = userAnswers[q.id];
+      const feedback = document.getElementById(`feedback${q.id}`);
+      const options = document.querySelectorAll('.option-card');
+      
+      options.forEach(opt => {
+        const originalIndex = parseInt(opt.dataset.original);
+        opt.classList.remove('correct', 'wrong', 'selected');
+        
+        if (originalIndex === q.correct) {
+          opt.classList.add('correct');
+        } else if (userAnswer === originalIndex) {
+          opt.classList.add('wrong');
+        }
+      });
+      
+      if (userAnswer !== undefined) {
+        const isCorrect = userAnswer === q.correct;
+        feedback.className = `feedback-card ${isCorrect ? 'ok' : 'err'}`;
+        feedback.innerHTML = isCorrect ? 
+          `✅ <strong>Correct !</strong><br>${q.explanation}` : 
+          `❌ <strong>Incorrect.</strong><br>${q.explanation}`;
+        feedback.classList.remove('hidden');
+      }
+    }
+
+
+
+    function retry() {
+      userAnswers = {};
+      showingAnswers = false;
+      currentQuestionIndex = 0;
+      
+      // Masquer tous les éléments du quiz
+      document.getElementById('quiz').classList.add('hidden');
+      document.getElementById('finalControls').classList.add('hidden');
+      document.getElementById('finalScore').classList.add('hidden');
+      document.getElementById('progressSection').classList.add('hidden');
+      document.getElementById('progressLabel').classList.add('hidden');
+      
+      // Réafficher l'écran d'accueil
+      document.getElementById('welcomeScreen').classList.remove('hidden');
+    }
+
+    // Navigation avec les boutons
+    function handleNext() {
+      if (showingAnswers) {
+        if (currentQuestionIndex < currentQuestions.length - 1) {
+          currentQuestionIndex++;
+          renderCurrentQuestion();
+          showCorrectionsForCurrentQuestion();
+        }
+      } else {
+        nextQuestion();
+      }
+    }
+
+    function handlePrev() {
+      if (showingAnswers) {
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          renderCurrentQuestion();
+          showCorrectionsForCurrentQuestion();
+        }
+      } else {
+        prevQuestion();
+      }
+    }
+
+    function startQuiz() {
+      // Masquer l'écran d'accueil
+      document.getElementById('welcomeScreen').classList.add('hidden');
+      
+      // Afficher les éléments du quiz
+      document.getElementById('quiz').classList.remove('hidden');
+      document.getElementById('progressSection').classList.remove('hidden');
+      document.getElementById('progressLabel').classList.remove('hidden');
+      
+      // Initialiser le quiz
+      shuffleQuestions();
+      renderCurrentQuestion();
+      updateProgress();
+    }
+
+    // Event listeners
+    document.getElementById('btnStart').addEventListener('click', startQuiz);
+    document.getElementById('btnNext').addEventListener('click', handleNext);
+    document.getElementById('btnPrev').addEventListener('click', handlePrev);
+    document.getElementById('btnCheckAll').addEventListener('click', checkAnswers);
+    document.getElementById('btnRetry').addEventListener('click', retry);
+
+    // Initialize - ne pas démarrer automatiquement
+    // Le quiz démarre seulement quand on clique sur "Commencer"
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98bbe39a30b6e1e1',t:'MTc1OTk5MjA1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

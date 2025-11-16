@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercices Interactifs : Les Aliments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff;
+        }
+        .game-title {
+            font-family: 'Poppins', sans-serif;
+        }
+        .exercise-card {
+            background-color: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        .exercise-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        .feedback {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+        .feedback-correct {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #4ade80;
+        }
+        .feedback-incorrect {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
+        .draggable {
+            cursor: grab;
+            padding: 0.75rem;
+            background-color: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .drop-zone {
+            padding: 1rem;
+            background-color: #e0f2fe;
+            border: 2px dashed #38bdf8;
+            border-radius: 0.75rem;
+            min-height: 50px;
+        }
+        .drop-zone.drag-over {
+            background-color: #bae6fd;
+        }
+        #final-score-card {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="game-title text-4xl sm:text-5xl font-bold text-blue-600">Les Aliments</h1>
+            <p class="text-slate-600 mt-2 text-lg">Teste tes connaissances avec ces exercices interactifs !</p>
+        </header>
+
+        <!-- Exercice 1: Compléter les blancs -->
+        <div id="ex1" class="exercise-card">
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Exercice 1 : Texte à compléter</h2>
+            <p class="text-slate-600 mb-6 text-lg">
+                L'alimentation chez l'homme est très 
+                <select id="blank1" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option value="">...</option>
+                    <option value="animale">animale</option>
+                    <option value="aliments">aliments</option>
+                    <option value="diversifiée">diversifiée</option>
+                    <option value="végétale">végétale</option>
+                </select>. 
+                Il se nourrit d'aliments d'origine 
+                <select id="blank2" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option value="">...</option>
+                    <option value="animale">animale</option>
+                    <option value="aliments">aliments</option>
+                    <option value="diversifiée">diversifiée</option>
+                    <option value="végétale">végétale</option>
+                </select> 
+                (comme la viande et le poisson) et d'origine 
+                <select id="blank3" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option value="">...</option>
+                    <option value="animale">animale</option>
+                    <option value="aliments">aliments</option>
+                    <option value="diversifiée">diversifiée</option>
+                    <option value="végétale">végétale</option>
+                </select> 
+                (comme les fruits et les légumes). Ces 
+                <select id="blank4" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option value="">...</option>
+                    <option value="animale">animale</option>
+                    <option value="aliments">aliments</option>
+                    <option value="diversifiée">diversifiée</option>
+                    <option value="végétale">végétale</option>
+                </select> 
+                contiennent différents nutriments essentiels pour notre corps.
+            </p>
+            <button onclick="checkEx1()" class="btn btn-primary">Vérifier</button>
+            <div id="feedback1" class="feedback hidden"></div>
+        </div>
+
+        <!-- Exercice 2: Association -->
+        <div id="ex2" class="exercise-card">
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Exercice 2 : Relier les couples</h2>
+            <p class="text-slate-600 mb-6">Fais glisser chaque aliment dans la bonne catégorie.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-2 text-center text-slate-700">Aliments</h3>
+                    <div id="drag-source" class="p-4 bg-slate-100 rounded-lg">
+                        <div id="drag-pain" class="draggable" draggable="true">Pain</div>
+                        <div id="drag-huile" class="draggable" draggable="true">Huile</div>
+                        <div id="drag-sardine" class="draggable" draggable="true">Sardine</div>
+                        <div id="drag-orange" class="draggable" draggable="true">Orange</div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-2 text-center text-slate-700">Catégories</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="font-semibold text-slate-600">Aliment riche en glucides</p>
+                            <div id="drop-glucides" class="drop-zone"></div>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-slate-600">Aliment riche en lipides</p>
+                            <div id="drop-lipides" class="drop-zone"></div>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-slate-600">Aliment riche en protides</p>
+                            <div id="drop-protides" class="drop-zone"></div>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-slate-600">Aliment riche en vitamines</p>
+                            <div id="drop-vitamines" class="drop-zone"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="checkEx2()" class="btn btn-primary mt-6">Vérifier</button>
+            <div id="feedback2" class="feedback hidden"></div>
+        </div>
+
+        <!-- Exercice 3: Vrai ou Faux -->
+        <div id="ex3" class="exercise-card">
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Exercice 3 : Vrai ou Faux</h2>
+            <p class="text-slate-600 mb-6">Pour chaque affirmation, clique sur Vrai ou Faux.</p>
+            <div class="space-y-4">
+                <div id="q3-1">
+                    <p class="text-lg text-slate-700">Le lait est un aliment composé et complet.</p>
+                    <div class="mt-2 space-x-2"><button class="btn bg-green-500 hover:bg-green-600" onclick="answerEx3('q3-1', true)">Vrai</button><button class="btn bg-red-500 hover:bg-red-600" onclick="answerEx3('q3-1', false)">Faux</button></div>
+                </div>
+                <div id="q3-2">
+                    <p class="text-lg text-slate-700">Les aliments énergétiques sont riches en vitamines et sels minéraux.</p>
+                    <div class="mt-2 space-x-2"><button class="btn bg-green-500 hover:bg-green-600" onclick="answerEx3('q3-2', true)">Vrai</button><button class="btn bg-red-500 hover:bg-red-600" onclick="answerEx3('q3-2', false)">Faux</button></div>
+                </div>
+                <div id="q3-3">
+                    <p class="text-lg text-slate-700">Le pain est un aliment riche en lipides.</p>
+                    <div class="mt-2 space-x-2"><button class="btn bg-green-500 hover:bg-green-600" onclick="answerEx3('q3-3', true)">Vrai</button><button class="btn bg-red-500 hover:bg-red-600" onclick="answerEx3('q3-3', false)">Faux</button></div>
+                </div>
+                <div id="q3-4">
+                    <p class="text-lg text-slate-700">Les aliments bâtisseurs sont riches en protides et sels minéraux.</p>
+                    <div class="mt-2 space-x-2"><button class="btn bg-green-500 hover:bg-green-600" onclick="answerEx3('q3-4', true)">Vrai</button><button class="btn bg-red-500 hover:bg-red-600" onclick="answerEx3('q3-4', false)">Faux</button></div>
+                </div>
+            </div>
+            <button onclick="checkEx3()" class="btn btn-primary mt-6">Vérifier</button>
+            <div id="feedback3" class="feedback hidden"></div>
+        </div>
+
+        <!-- Exercice 4: QCM -->
+        <div id="ex4" class="exercise-card">
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Exercice 4 : Questions à choix multiple</h2>
+            <p class="text-slate-600 mb-6">Choisis la bonne réponse pour chaque question.</p>
+            <div class="space-y-6">
+                <div>
+                    <p class="font-semibold text-lg text-slate-700 mb-2">1. Quel groupe d'aliments est considéré comme protecteur ?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center"><input type="radio" name="q4-1" value="a" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"> <span class="ml-3 text-slate-600">Aliments riches en lipides</span></label>
+                        <label class="flex items-center"><input type="radio" name="q4-1" value="b" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"> <span class="ml-3 text-slate-600">Aliments riches en vitamines et sels minéraux</span></label>
+                        <label class="flex items-center"><input type="radio" name="q4-1" value="c" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"> <span class="ml-3 text-slate-600">Aliments riches en glucides</span></label>
+                    </div>
+                </div>
+                <div>
+                    <p class="font-semibold text-lg text-slate-700 mb-2">2. Quelle est la principale fonction des aliments riches en protides ?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center"><input type="radio" name="q4-2" value="a" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"> <span class="ml-3 text-slate-600">Fournir de l'énergie</span></label>
+                        <label class="flex items-center"><input type="radio" name="q4-2" value="b" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"> <span class="ml-3 text-slate-600">Protéger contre les maladies</span></label>
+                        <label class="flex items-center"><input type="radio" name="q4-2" value="c" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"> <span class="ml-3 text-slate-600">Construire et réparer les tissus du corps</span></label>
+                    </div>
+                </div>
+            </div>
+            <button onclick="checkEx4()" class="btn btn-primary mt-6">Vérifier</button>
+            <div id="feedback4" class="feedback hidden"></div>
+        </div>
+
+        <!-- Exercice 5: Mettre en ordre -->
+        <div id="ex5" class="exercise-card">
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Exercice 5 : Mettre en ordre</h2>
+            <p class="text-slate-600 mb-6">Remets dans le bon ordre les étapes de l'analyse chimique d'un aliment.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-2 text-center text-slate-700">Étapes (à ordonner)</h3>
+                    <div id="order-source" class="p-4 bg-slate-100 rounded-lg space-y-2">
+                        <div id="order-a" class="draggable" draggable="true">a. Observer les résultats des tests</div>
+                        <div id="order-b" class="draggable" draggable="true">b. Choisir un aliment à analyser</div>
+                        <div id="order-c" class="draggable" draggable="true">c. Conclure sur la composition de l'aliment</div>
+                        <div id="order-d" class="draggable" draggable="true">d. Effectuer des tests pour détecter les aliments simples</div>
+                        <div id="order-e" class="draggable" draggable="true">e. Préparer les réactifs nécessaires pour les tests</div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-2 text-center text-slate-700">Ordre correct</h3>
+                    <div id="order-target" class="drop-zone space-y-2"></div>
+                </div>
+            </div>
+            <button onclick="checkEx5()" class="btn btn-primary mt-6">Vérifier</button>
+            <div id="feedback5" class="feedback hidden"></div>
+        </div>
+        
+        <!-- Score Final -->
+        <div id="final-score-card" class="text-center p-8 rounded-2xl text-white hidden">
+            <h2 class="text-3xl font-bold mb-4">Bravo, tu as terminé !</h2>
+            <p class="text-xl">Ton score final est de <span id="final-score" class="font-bold text-4xl">0</span> / 5</p>
+            <p id="final-message" class="mt-4 text-lg"></p>
+            <button onclick="resetAll()" class="btn bg-white text-blue-600 hover:bg-slate-100 mt-6">Recommencer</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- State Management ---
+        let score = 0;
+        const exercisesState = {
+            ex1: { solved: false, correct: false },
+            ex2: { solved: false, correct: false },
+            ex3: { solved: false, correct: false, answers: {}, correctAnswers: { 'q3-1': true, 'q3-2': false, 'q3-3': false, 'q3-4': true } },
+            ex4: { solved: false, correct: false },
+            ex5: { solved: false, correct: false }
+        };
+
+        // --- Generic Functions ---
+        function updateScore() {
+            score = Object.values(exercisesState).filter(ex => ex.correct).length;
+            const totalSolved = Object.values(exercisesState).filter(ex => ex.solved).length;
+            
+            if (totalSolved === 5) {
+                document.getElementById('final-score-card').classList.remove('hidden');
+                document.getElementById('final-score').textContent = score;
+                let message = "";
+                if (score === 5) {
+                    message = "Excellent travail ! Tu es un(e) vrai(e) champion(ne) de la nutrition !";
+                } else if (score >= 3) {
+                    message = "Très bon score ! Tu maîtrises bien le sujet.";
+                } else {
+                    message = "Bien essayé ! N'hésite pas à revoir les points qui t'ont posé problème et à recommencer.";
+                }
+                document.getElementById('final-message').textContent = message;
+            }
+        }
+
+        function showFeedback(id, message, isCorrect) {
+            const feedbackEl = document.getElementById(id);
+            feedbackEl.innerHTML = message;
+            feedbackEl.classList.remove('hidden', 'feedback-correct', 'feedback-incorrect');
+            feedbackEl.classList.add(isCorrect ? 'feedback-correct' : 'feedback-incorrect');
+        }
+        
+        function disableButton(button) {
+            button.disabled = true;
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // --- Exercice 1: Compléter les blancs ---
+        function checkEx1() {
+            const answers = {
+                blank1: 'diversifiée',
+                blank2: 'animale',
+                blank3: 'végétale',
+                blank4: 'aliments'
+            };
+            let isCorrect = true;
+            for (const [id, correctValue] of Object.entries(answers)) {
+                const select = document.getElementById(id);
+                if (select.value !== correctValue) {
+                    isCorrect = false;
+                    select.classList.add('border-red-500');
+                } else {
+                    select.classList.remove('border-red-500');
+                    select.classList.add('border-green-500');
+                }
+            }
+            
+            exercisesState.ex1.solved = true;
+            exercisesState.ex1.correct = isCorrect;
+            
+            if (isCorrect) {
+                showFeedback('feedback1', '<strong>Bravo !</strong> Toutes les réponses sont correctes.', true);
+            } else {
+                showFeedback('feedback1', '<strong>Oups !</strong> Certaines réponses sont incorrectes. Regarde bien les mots en rouge et essaie de comprendre pourquoi.', false);
+            }
+            updateScore();
+            disableButton(event.target);
+        }
+
+        // --- Exercice 2: Association ---
+        const correctAssociations = {
+            'drag-pain': 'drop-glucides',
+            'drag-huile': 'drop-lipides',
+            'drag-sardine': 'drop-protides',
+            'drag-orange': 'drop-vitamines'
+        };
+
+        function checkEx2() {
+            let correctCount = 0;
+            for (const [dragId, dropId] of Object.entries(correctAssociations)) {
+                const dropZone = document.getElementById(dropId);
+                const droppedEl = dropZone.querySelector('.draggable');
+                if (droppedEl && droppedEl.id === dragId) {
+                    correctCount++;
+                    dropZone.classList.remove('border-red-500');
+                    dropZone.classList.add('border-green-500');
+                } else {
+                    dropZone.classList.add('border-red-500');
+                }
+            }
+            
+            const isCorrect = correctCount === 4;
+            exercisesState.ex2.solved = true;
+            exercisesState.ex2.correct = isCorrect;
+
+            if (isCorrect) {
+                showFeedback('feedback2', '<strong>Parfait !</strong> Toutes les associations sont justes.', true);
+            } else {
+                showFeedback('feedback2', `<strong>Presque !</strong> Tu as ${correctCount} association(s) correcte(s) sur 4. Les zones en rouge sont incorrectes.`, false);
+            }
+            updateScore();
+            disableButton(event.target);
+        }
+
+
+        // --- Exercice 3: Vrai ou Faux ---
+        function answerEx3(questionId, userAnswer) {
+            if (exercisesState.ex3.solved) return;
+            
+            const isCorrect = exercisesState.ex3.correctAnswers[questionId] === userAnswer;
+            exercisesState.ex3.answers[questionId] = {userAnswer, isCorrect};
+            
+            const questionDiv = document.getElementById(questionId);
+            questionDiv.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-offset-2', 'ring-blue-400');
+            });
+            event.target.classList.add('ring-4', 'ring-offset-2', 'ring-blue-400');
+        }
+
+        function checkEx3() {
+            if (Object.keys(exercisesState.ex3.answers).length < 4) {
+                showFeedback('feedback3', '<strong>Attention !</strong> Tu dois répondre à toutes les questions avant de vérifier.', false);
+                return;
+            }
+            
+            let correctCount = 0;
+            for (const qId in exercisesState.ex3.correctAnswers) {
+                const qDiv = document.getElementById(qId);
+                if (exercisesState.ex3.answers[qId] && exercisesState.ex3.answers[qId].isCorrect) {
+                    correctCount++;
+                    qDiv.querySelector('p').classList.add('text-green-600', 'font-bold');
+                } else {
+                    qDiv.querySelector('p').classList.add('text-red-600', 'font-bold');
+                }
+            }
+            
+            const isCorrect = correctCount === 4;
+            exercisesState.ex3.solved = true;
+            exercisesState.ex3.correct = isCorrect;
+
+            if (isCorrect) {
+                 showFeedback('feedback3', '<strong>Excellent !</strong> Tout est correct.', true);
+            } else {
+                 showFeedback('feedback3', `<strong>Pas mal !</strong> Tu as ${correctCount} bonne(s) réponse(s) sur 4. Les affirmations en rouge sont celles où tu t'es trompé.`, false);
+            }
+            updateScore();
+            disableButton(event.target);
+        }
+
+        // --- Exercice 4: QCM ---
+        function checkEx4() {
+            const answers = { 'q4-1': 'b', 'q4-2': 'c' };
+            let correctCount = 0;
+            let answeredCount = 0;
+            
+            for (const [name, correctValue] of Object.entries(answers)) {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (selected) {
+                    answeredCount++;
+                    if (selected.value === correctValue) {
+                        correctCount++;
+                        selected.parentElement.classList.add('text-green-600', 'font-bold');
+                    } else {
+                        selected.parentElement.classList.add('text-red-600', 'font-bold');
+                    }
+                }
+            }
+            
+            if (answeredCount < 2) {
+                 showFeedback('feedback4', '<strong>Attention !</strong> Tu dois répondre à toutes les questions.', false);
+                 return;
+            }
+
+            const isCorrect = correctCount === 2;
+            exercisesState.ex4.solved = true;
+            exercisesState.ex4.correct = isCorrect;
+
+            if (isCorrect) {
+                showFeedback('feedback4', '<strong>Super !</strong> Tes réponses sont parfaites.', true);
+            } else {
+                showFeedback('feedback4', `<strong>Continue tes efforts !</strong> Tu as ${correctCount} bonne(s) réponse(s) sur 2. Les réponses en rouge sont incorrectes.`, false);
+            }
+            updateScore();
+            disableButton(event.target);
+        }
+
+        // --- Exercice 5: Mettre en ordre ---
+        const correctOrder = ['order-b', 'order-e', 'order-d', 'order-a', 'order-c'];
+
+        function checkEx5() {
+            const dropZone = document.getElementById('order-target');
+            const droppedItems = Array.from(dropZone.children);
+            
+            if (droppedItems.length < 5) {
+                showFeedback('feedback5', '<strong>Attention !</strong> Tu dois ordonner toutes les étapes.', false);
+                return;
+            }
+
+            let correctCount = 0;
+            droppedItems.forEach((item, index) => {
+                if (item.id === correctOrder[index]) {
+                    correctCount++;
+                    item.classList.add('bg-green-200', 'border-green-400');
+                } else {
+                    item.classList.add('bg-red-200', 'border-red-400');
+                }
+            });
+
+            const isCorrect = correctCount === 5;
+            exercisesState.ex5.solved = true;
+            exercisesState.ex5.correct = isCorrect;
+
+            if (isCorrect) {
+                showFeedback('feedback5', '<strong>Félicitations !</strong> L\'ordre est parfait.', true);
+            } else {
+                showFeedback('feedback5', `<strong>Presque !</strong> ${correctCount} étape(s) sont bien placées. Les étapes en rouge ne sont pas au bon endroit.`, false);
+            }
+            updateScore();
+            disableButton(event.target);
+        }
+        
+        // --- Drag and Drop Logic ---
+        let draggedItem = null;
+
+        function setupDragAndDrop() {
+            const draggables = document.querySelectorAll('.draggable');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target;
+                    setTimeout(() => e.target.style.display = 'none', 0);
+                });
+
+                draggable.addEventListener('dragend', (e) => {
+                    setTimeout(() => {
+                        draggedItem.style.display = 'block';
+                        draggedItem = null;
+                    }, 0);
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', (e) => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    // For exercise 2, allow only one item per box
+                    if(zone.id.startsWith('drop-')) {
+                        if (zone.children.length > 0) {
+                           document.getElementById('drag-source').appendChild(zone.firstElementChild);
+                        }
+                    }
+                    zone.appendChild(draggedItem);
+                });
+            });
+        }
+        
+        // --- Reset Function ---
+        function resetAll() {
+            window.location.reload();
+        }
+
+        // --- Initializer ---
+        window.onload = () => {
+            setupDragAndDrop();
+        };
+    </script>
+</body>
+</html>

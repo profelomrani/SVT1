@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: La composition chimique des aliments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d47a1; /* Bleu marine profond */
+            --secondary-color: #4a6fa5; /* Bleu plus doux */
+            --success-color: #1abc9c; /* Vert émeraude */
+            --danger-color: #e74c3c; /* Rouge doux */
+            --light-color: #fdfdfd;
+            --bg-color: #f4f7f9;
+            --font-color: #34495e; /* Gris-bleu foncé */
+            --border-color: #e1e8ed;
+            --border-radius: 15px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--font-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-wrapper {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+        
+        /* --- NOUVELLE SECTION EN-TÊTE --- */
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 25px;
+        }
+
+        .logo {
+            max-width: 400px;
+            width: 80%;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        .school-info p {
+            margin: 4px 0;
+            font-weight: 600;
+        }
+
+        .school-info .school-name {
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+
+        .school-info .subject-name {
+            font-size: 1em;
+            color: var(--secondary-color);
+        }
+        
+        /* --- NOUVELLE SECTION TITRE --- */
+        .title-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .quiz-subtitle {
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            font-weight: 400;
+            margin: 0;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.2em;
+            margin: 0;
+        }
+
+        .level-info {
+            text-align: center;
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-top: 5px;
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 20px;
+            height: 12px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #1abc9c, #2ecc71);
+            border-radius: 20px;
+            transition: width 0.4s ease-in-out;
+        }
+        
+        .question-block {
+            display: none;
+        }
+
+        .question-block.active {
+            display: block;
+        }
+
+        .question-header {
+            font-size: 1em;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .question-text strong {
+            color: #d35400; /* Orange pour le mot-clé */
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background-color: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px 20px;
+            text-align: left;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.05em;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .option:hover:not(:disabled) {
+            transform: translateY(-3px);
+            border-color: var(--secondary-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        }
+
+        .option.correct {
+            background-color: #e8f8f5;
+            border-color: var(--success-color);
+            color: #0e6655;
+            font-weight: 600;
+        }
+
+        .option.incorrect {
+            background-color: #fdedec;
+            border-color: var(--danger-color);
+            color: #a93226;
+        }
+        
+        .option:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .feedback {
+            margin-top: 25px;
+            padding: 15px;
+            border-left: 5px solid;
+            border-radius: 0 8px 8px 0;
+            display: none;
+            font-size: 1.05em;
+            background-color: #eaf2f8;
+            border-color: var(--secondary-color);
+        }
+
+        .next-btn {
+            display: none;
+            float: right;
+            margin-top: 25px;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 71, 161, 0.2);
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 71, 161, 0.3);
+        }
+
+        #results-screen {
+            text-align: center;
+            display: none;
+        }
+        
+        #results-screen h2 {
+            font-size: 2.5em;
+            color: var(--primary-color);
+        }
+        
+        #results-screen #score-text {
+            font-size: 1.6em;
+            margin: 20px 0;
+        }
+        
+        #results-screen .final-message {
+            font-size: 1.2em;
+            color: var(--secondary-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-wrapper">
+        <div class="quiz-header">
+            <img src="https://i.postimg.cc/nV52n9Xm/logo-ar-tamz.png" alt="Logo du collège" class="logo">
+            <div class="school-info">
+                <p class="school-name">Collège Sidi Abd Elaziz Oued Zem</p>
+                <p class="subject-name">Sciences de la Vie et de la Terre</p>
+            </div>
+        </div>
+
+        <div class="title-container">
+            <p class="quiz-subtitle">Quiz sur</p>
+            <h1>La composition chimique des aliments</h1>
+        </div>
+        <p class="level-info">Niveau : 3APIC</p>
+
+
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+
+        <div id="quiz-container">
+            <!-- Questions will be dynamically inserted here by JS -->
+        </div>
+
+        <div id="results-screen">
+            <h2>Quiz Terminé ! 🌟</h2>
+            <p id="score-text"></p>
+            <p class="final-message">Vous êtes un véritable expert de la chimie des aliments ! 🏆</p>
+        </div>
+    </div>
+
+<script>
+    // Le code JavaScript reste identique à la version précédente car il gère la logique
+    // qui n'a pas besoin d'être modifiée.
+    document.addEventListener('DOMContentLoaded', () => {
+        const quizData = [
+            { question: "Comment peut-on prouver que le pain contient de <strong>l'amidon</strong> ?", options: ["En versant de l'acide nitrique dessus.", "En déposant quelques gouttes d'eau iodée.", "En le chauffant très fort."], answer: 1, feedback: "Bravo ! L'eau iodée devient bleue-violette foncée au contact de l'amidon. C'est magique ! ✨" },
+            { question: "Quelle couleur apparaît si on verse de l'acide nitrique sur un aliment qui contient des <strong>protides</strong> ?", options: ["Une couleur rouge brique.", "Une couleur bleue.", "Une couleur jaune."], answer: 2, feedback: "Exact ! L'acide nitrique nous aide à 'colorier' les protides en jaune pour les trouver. 🎨" },
+            { question: "Pour savoir si un aliment contient du <strong>glucose</strong>, on utilise la liqueur de Fehling et ensuite...", options: ["On le met au congélateur.", "On doit le chauffer.", "On doit ajouter de l'eau."], answer: 1, feedback: "Bien joué ! La chaleur est nécessaire pour que la réaction se produise et qu'un précipité rouge brique apparaisse. 🔥" },
+            { question: "Un précipité blanc qui noircit à la lumière après avoir ajouté du nitrate d'argent prouve la présence de...", options: ["Calcium.", "Sel de chlorure.", "Sucre."], answer: 1, feedback: "Excellent ! Le nitrate d'argent est le détective du sel de chlorure. 🕵️‍♂️" },
+            { question: "Quel produit utilise-t-on pour trouver des ions <strong>calcium</strong> dans le lait ?", options: ["L'oxalate d'ammonium.", "Le vinaigre.", "L'eau iodée."], answer: 0, feedback: "Parfait ! Il réagit avec le calcium pour former un précipité tout blanc, comme de la neige. ❄️" },
+            { question: "Pour préparer un filtrat de pain, l'étape juste après avoir mélangé le pain broyé avec de l'eau est...", options: ["Chauffer le mélange.", "Goûter le mélange.", "Filtrer le mélange."], answer: 2, feedback: "Oui ! On utilise un filtre pour séparer le liquide (le filtrat) des morceaux solides de pain." },
+            { question: "D'après les expériences, est-ce que le lait contient de <strong>l'amidon</strong> ?", options: ["Oui, beaucoup.", "Non, pas du tout.", "Oui, un tout petit peu."], answer: 1, feedback: "C'est la bonne réponse ! Si on met de l'eau iodée dans le lait, il ne devient pas bleu. 👍" },
+            { question: "Quand on chauffe le lait, des gouttelettes se forment en haut du tube. Cela prouve que le lait contient de...", options: ["Sucre.", "L'eau.", "L'air."], answer: 1, feedback: "Exactement ! L'eau s'évapore avec la chaleur puis se condense sur les parois froides du tube." },
+            { question: "Le pain et le lait sont des aliments...", options: ["Simples (ils ne contiennent qu'une seule chose).", "Composés (ils sont un mélange de plusieurs choses).", "Vides (ils ne contiennent rien)."], answer: 1, feedback: "Très bien ! Ils sont faits de plusieurs aliments simples comme l'eau, les protides, les glucides, etc." },
+            { question: "Lequel de ces deux aliments est considéré comme <strong>'complet'</strong> ?", options: ["Le pain.", "Le lait.", "Les deux."], answer: 1, feedback: "Super ! Le lait est un super-aliment, c'est pour cela qu'il est si important pour la croissance !" }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsScreen = document.getElementById('results-screen');
+        const scoreText = document.getElementById('score-text');
+        const progressBar = document.getElementById('progress-bar');
+        
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function loadQuiz() {
+            quizContainer.innerHTML = '';
+            
+            if (currentQuestionIndex < quizData.length) {
+                const currentQuestionData = quizData[currentQuestionIndex];
+                
+                const questionBlock = document.createElement('div');
+                questionBlock.className = 'question-block active';
+
+                questionBlock.innerHTML = `
+                    <div class="question-header">Question ${currentQuestionIndex + 1} / ${quizData.length}</div>
+                    <p class="question-text">${currentQuestionData.question}</p>
+                    <div class="options-container">
+                        ${currentQuestionData.options.map((option, index) => `
+                            <button class="option" data-index="${index}">${option}</button>
+                        `).join('')}
+                    </div>
+                    <div class="feedback">${currentQuestionData.feedback}</div>
+                    <button class="next-btn">Suivant &rarr;</button>
+                `;
+                
+                quizContainer.appendChild(questionBlock);
+                addEventListeners();
+                updateProgressBar();
+            } else {
+                showResults();
+            }
+        }
+        
+        function addEventListeners() {
+            const options = quizContainer.querySelectorAll('.option');
+            const nextBtn = quizContainer.querySelector('.next-btn');
+            const feedback = quizContainer.querySelector('.feedback');
+            
+            options.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    if (e.target.disabled) return;
+                    
+                    const selectedIndex = parseInt(e.target.dataset.index);
+                    const correctAnswerIndex = quizData[currentQuestionIndex].answer;
+                    
+                    options.forEach(btn => btn.disabled = true);
+                    
+                    if (selectedIndex === correctAnswerIndex) {
+                        e.target.classList.add('correct');
+                        score++;
+                    } else {
+                        e.target.classList.add('incorrect');
+                        options[correctAnswerIndex].classList.add('correct');
+                    }
+                    
+                    feedback.style.display = 'block';
+                    nextBtn.style.display = 'block';
+                });
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentQuestionIndex++;
+                loadQuiz();
+            });
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function showResults() {
+            document.querySelector('.title-container').style.display = 'none';
+            document.querySelector('.level-info').style.display = 'none';
+            quizContainer.style.display = 'none';
+            document.querySelector('.progress-container').style.display = 'none';
+            resultsScreen.style.display = 'block';
+            scoreText.innerHTML = `Votre score final est de : <strong style="color: var(--primary-color);">${score} / ${quizData.length}</strong>`;
+        }
+        
+        loadQuiz();
+    });
+</script>
+
+</body>
+</html>
